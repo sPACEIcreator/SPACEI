@@ -12,20 +12,20 @@ export default async (request, context) => {
   const start=()=>{
     const status=document.getElementById('aiStatus');
     const load=document.getElementById('loadAiBtn');
-    if(status) status.textContent='AI: loading automatically…';
+    if(status) status.textContent='AI: checking Cloud Brain…';
     if(load){
       load.disabled=true;
-      load.textContent='☁️ AI auto-loading…';
+      load.textContent='☁️ Checking AI…';
     }
 
     fetch('/api/ai-status',{cache:'no-store'})
-      .then(r=>r.json().then(d=>({ok:r.ok,d})))
+      .then(async r=>({ok:r.ok,d:await r.json()}))
       .then(({ok,d})=>{
-        const ready=ok && (d?.configured===true || d?.ok===true);
-        if(status) status.textContent=ready?'AI: SPACEI Cloud Brain — Ready':'AI: Cloud Brain unavailable';
+        const ready=Boolean(ok && d && d.configured===true);
+        if(status) status.textContent=ready?'AI: SPACEI Cloud Brain — Ready':'AI: Cloud Brain needs setup';
         if(load){
           load.disabled=false;
-          load.textContent=ready?'☁️ AI loaded automatically':'↻ Retry AI connection';
+          load.textContent=ready?'☁️ AI loaded automatically':'⚠️ AI needs production key';
           load.onclick=()=>location.reload();
         }
         window.SPACEI_AI_READY=ready;
