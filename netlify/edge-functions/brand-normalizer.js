@@ -1,3 +1,4 @@
+// Redeploy trigger: re-publish current SPACEI updates without changing behavior.
 export default async (request, context) => {
   const response = await context.next();
   const type = response.headers.get("content-type") || "";
