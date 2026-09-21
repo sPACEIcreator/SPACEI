@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import { getStore } from "@netlify/blobs";
 
 const store = getStore("spacei-social", { consistency: "strong" });
