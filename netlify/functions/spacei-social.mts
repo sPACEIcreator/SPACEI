@@ -140,7 +140,7 @@ export default async (request) => {
       if (!match) return json({ error: "Invalid video data" }, 400);
       const bytes = Math.floor(match[2].length * 0.75);
       if (bytes > 4_000_000) return json({ error: "Video is over the 4 MB upload limit" }, 413);
-      await store.set(`video-files/${id}`, Buffer.from(match[2], "base64"));
+      await store.set(`video-files/${id}`, Buffer.from(match[2], "base64"));\n      await store.set(`video-mime/${id}`, mime);
     }
 
     const video = {
