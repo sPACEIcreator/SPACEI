@@ -41,6 +41,20 @@ async function nextUserNumber() {
   return current;
 }
 
+async function ensureCreatorSeed() {
+  const { blobs } = await store.list({ prefix: "users/" });
+  if (blobs.length) return;
+  const user = {
+    handle: "@user1",
+    displayName: "OreoPuggy (dev/creator)",
+    username: "OreoPuggy",
+    bio: "Hey its me the creator",
+    createdAt: Date.now(),
+  };
+  await store.setJSON("users/user1", user);
+  await store.set("meta/next-user-id", "2");
+}
+
 export default async (request) => {
   const url = new URL(request.url);
   const action = url.searchParams.get("action") || "users";
@@ -50,18 +64,28 @@ export default async (request) => {
       const id = clean(url.searchParams.get("id"), 100);
       const blob = await store.get(`video-files/${id}`, { type: "blob" });
       if (!blob) return new Response("Not found", { status: 404 });
-      return new Response(blob, { headers: { "content-type": "video/mp4", "cache-control": "public, max-age=31536000, immutable" } });
+      const mime = await store.get(`video-mime/${id}`, { type: "text" }) || "video/mp4";
+      return new Response(blob, {
+        headers: {
+          "content-type": mime,
+          "cache-control": "public, max-age=31536000, immutable",
+        },
+      });
     }
 
     if (action === "users") {
+      await ensureCreatorSeed();
       const q = clean(url.searchParams.get("q"), 80).toLowerCase();
       const { blobs } = await store.list({ prefix: "users/" });
       const users = [];
       for (const b of blobs) {
         const u = await store.get(b.key, { type: "json" });
         if (!u) continue;
-        const hay = `${u.handle} ${u.displayName} ${u.username || ""}`.toLowerCase();
-        const d = q ? Math.min(distance(q.replace(/^@/, ""), String(u.handle).replace(/^@/, "")), distance(q, String(u.displayName || ""))) : 0;
+        const fields = [u.handle, u.displayName, u.username || ""].map(x => String(x).toLowerCase());
+        const normalizedQ = q.replace(/^@/, "");
+        const distances = fields.map(field => distance(normalizedQ, field.replace(/^@/, "")));
+        const d = q ? Math.min(...distances) : 0;
+        const hay = fields.join(" ");
         if (!q || hay.includes(q) || d <= Math.max(2, Math.floor(q.length * 0.35))) {
           users.push({ ...u, score: d });
         }
@@ -96,12 +120,27 @@ export default async (request) => {
     if (body.handle) {
       const wanted = clean(body.handle, 40).toLowerCase();
       if (!/^@?user\d+$/.test(wanted)) return json({ error: "Invalid handle" }, 400);
-      if (await getUser(wanted)) return json({ error: "Handle already exists" }, 409);
+      const normalized = wanted.startsWith("@") ? wanted : "@" + wanted;
+      const existing = await getUser(normalized);
+      if (existing) {
+        if (
+          normalized === "@user1" &&
+          /^oreopuggy/i.test(displayName) &&
+          /^oreopuggy/i.test(String(existing.username || ""))
+        ) {
+          return json({ user: existing }, 200);
+        }
+        return json({ error: "Handle already exists" }, 409);
+      }
     }
 
-    const number = body.handle ? Number(String(body.handle).replace(/\D/g, "")) : await nextUserNumber();
+    const number = body.handle
+      ? Number(String(body.handle).replace(/\D/g, ""))
+      : await nextUserNumber();
+
     const handle = `@user${number}`;
-    if (await getUser(handle)) return json({ error: "Handle already exists" }, 409);
+    const existing = await getUser(handle);
+    if (existing) return json({ user: existing }, 200);
 
     const user = {
       handle,
@@ -110,6 +149,10 @@ export default async (request) => {
       createdAt: Date.now(),
     };
     await store.setJSON(`users/user${number}`, user);
+
+    const next = Number(await store.get("meta/next-user-id", { type: "text" }) || "1");
+    if (number >= next) await store.set("meta/next-user-id", String(number + 1));
+
     return json({ user }, 201);
   }
 
@@ -129,6 +172,7 @@ export default async (request) => {
     const handle = clean(body.handle, 40).toLowerCase();
     const user = await getUser(handle);
     if (!user) return json({ error: "User not found" }, 404);
+
     const title = clean(body.title, 120);
     const caption = clean(body.caption, 500);
     const privacy = body.privacy === "private" ? "private" : "public";
@@ -139,13 +183,20 @@ export default async (request) => {
     if (src) {
       const match = src.match(/^data:([^;]+);base64,(.+)$/);
       if (!match) return json({ error: "Invalid video data" }, 400);
+      const mime = match[1] || "video/mp4";
       const bytes = Math.floor(match[2].length * 0.75);
       if (bytes > 4_000_000) return json({ error: "Video is over the 4 MB upload limit" }, 413);
-      await store.set(`video-files/${id}`, Buffer.from(match[2], "base64"));\n      await store.set(`video-mime/${id}`, mime);
+      await store.set(`video-files/${id}`, Buffer.from(match[2], "base64"));
+      await store.set(`video-mime/${id}`, mime);
     }
 
     const video = {
-      id, handle, user: user.displayName, title, caption, privacy,
+      id,
+      handle,
+      user: user.displayName,
+      title,
+      caption,
+      privacy,
       src: src ? `/.netlify/functions/spacei-social?action=video&id=${encodeURIComponent(id)}` : "",
       createdAt: Date.now(),
     };
