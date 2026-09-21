@@ -9889,6 +9889,188 @@ addEventListener('resize',()=>{if(document.getElementById('warpDriveGame849')?.c
 })();
 </script>
 
+
+<style id="spaceiSocialUpgrade1000">
+#spaceiSocialPeople1000,#spaceiSocialVideos1000{position:fixed;inset:0;z-index:12000;background:#050817;color:#fff;display:none}
+#spaceiSocialPeople1000.show,#spaceiSocialVideos1000.show{display:block}
+.spxTop{position:sticky;top:0;z-index:2;background:#080d20eF;border-bottom:1px solid #304071;padding:12px;display:flex;gap:8px;align-items:center}
+.spxBody{height:calc(100dvh - 58px);overflow:auto;padding:12px;max-width:850px;margin:auto}
+.spxSearch{width:100%;background:#0d1530;color:#fff;border:1px solid #304071;border-radius:13px;padding:12px}
+.spxUser{display:flex;gap:10px;align-items:center;background:#0d1530;border:1px solid #304071;border-radius:15px;padding:12px;margin:8px 0;cursor:pointer}
+.spxAvatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#18234a}
+.spxHandle{color:#9da8c7;font-size:13px}
+.spxFeed{height:calc(100dvh - 58px);overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior-y:contain}
+.spxSlide{height:100%;min-height:100%;scroll-snap-align:start;display:flex;align-items:center;justify-content:center;padding:10px}
+.spxCard{width:min(100%,620px);height:100%;max-height:100%;position:relative;background:#090f24;border:1px solid #304071;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.spxCard video{width:100%;height:78%;object-fit:contain;background:#000}
+.spxInfo{padding:12px;background:linear-gradient(transparent,#090f24 20%);min-height:22%}
+.spxInfo b{font-size:17px}.spxMeta{color:#b8c1df;margin-top:4px}
+#spxPrivacyRow{margin:10px 0}
+#spxPrivacy{width:100%;background:#111a38;color:#fff;border:1px solid #304071;border-radius:13px;padding:10px}
+@media(max-width:600px){.spxCard{border-radius:0}.spxSlide{padding:0}.spxCard video{height:82%}}
+</style>
+<div id="spaceiSocialPeople1000">
+  <div class="spxTop"><button id="spxPeopleBack">←</button><b>👥 SPACEI People</b></div>
+  <div class="spxBody">
+    <input id="spxPeopleSearch" class="spxSearch" placeholder="Search people, @user IDs, or usernames…">
+    <div id="spxPeopleResults"><div class="small">Search all registered SPACEI users.</div></div>
+  </div>
+</div>
+<div id="spaceiSocialVideos1000">
+  <div class="spxTop"><button id="spxVideosBack">←</button><b>🎥 SPACEI Videos</b><span style="flex:1"></span><input id="spxVideoSearch" class="spxSearch" style="max-width:300px" placeholder="Search videos…"></div>
+  <div id="spxVideoFeed" class="spxFeed"></div>
+</div>
+<script id="spaceiSocialUpgrade1000">
+(()=> {
+  const API='/api/spacei-social';
+  const getJSON=async(url)=>{const r=await fetch(url);if(!r.ok)throw new Error(await r.text());return r.json()};
+  const postJSON=async(action,body)=>{const r=await fetch(API+'?action='+encodeURIComponent(action),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Request failed');return d};
+
+  function handle(){return localStorage.getItem('spacei_permanent_handle')||''}
+  function setHandle(h){
+    localStorage.setItem('spacei_permanent_handle',h);
+    const el=document.getElementById('profileHandle');if(el)el.textContent=h;
+    const card=document.getElementById('spxAccountIdCard');
+    if(card)card.innerHTML='<b>Your permanent SPACEI ID</b><br><span style="font-size:20px">'+esc(h)+'</span><div class="small">This @user ID cannot be changed.</div>';
+  }
+  function esc(v){const d=document.createElement('div');d.textContent=String(v??'');return d.innerHTML}
+  async function ensureAccount(name){
+    if(handle())return handle();
+    const cleanName=(name||'SPACEI User').trim()||'SPACEI User';
+    let data;
+    try{
+      const preferred=/^oreopuggy/i.test(cleanName)?'@user1':null;
+      data=await postJSON('register',{displayName:cleanName,username:cleanName,handle:preferred});
+    }catch(e){
+      if(e.message.includes('already exists')){
+        data=await postJSON('register',{displayName:cleanName,username:cleanName});
+      }else{throw e}
+    }
+    setHandle(data.user.handle);
+    return data.user.handle;
+  }
+
+  async function syncProfile(){
+    const h=handle();if(!h)return;
+    try{
+      const p=JSON.parse(localStorage.getItem('spacei_profile_074')||'{}');
+      const o=JSON.parse(localStorage.getItem('spacei_onboarding_profile')||'{}');
+      await postJSON('profile',{handle:h,displayName:o.name||p.username||'SPACEI User',username:p.username||o.name||'',bio:p.bio||''});
+    }catch(e){}
+  }
+
+  function addIdCard(){
+    const panel=document.getElementById('profilePanel');if(!panel||document.getElementById('spxAccountIdCard'))return;
+    const card=document.createElement('div');card.id='spxAccountIdCard';card.className='notice';card.style.margin='10px 0';
+    panel.querySelector('.sheet')?.insertBefore(card,panel.querySelector('h3'));
+    const h=handle();card.innerHTML=h?'<b>Your permanent SPACEI ID</b><br><span style="font-size:20px">'+esc(h)+'</span><div class="small">This @user ID cannot be changed.</div>':'Your permanent @user ID will appear here after account setup.';
+  }
+
+  async function openPeople(){
+    document.getElementById('spaceiSocialPeople1000').classList.add('show');
+    document.getElementById('spxPeopleSearch').focus();
+    await renderPeople();
+  }
+  async function renderPeople(){
+    const q=document.getElementById('spxPeopleSearch').value.trim();
+    const box=document.getElementById('spxPeopleResults');
+    try{
+      const d=await getJSON(API+'?action=users&q='+encodeURIComponent(q));
+      box.innerHTML=d.users.length?d.users.map(u=>'<div class="spxUser" data-h="'+esc(u.handle)+'"><div class="spxAvatar">👤</div><div><b>'+esc(u.displayName)+'</b><div class="spxHandle">'+esc(u.handle)+'</div></div></div>').join(''):'<div class="small">No matching users.</div>';
+      box.querySelectorAll('.spxUser').forEach(x=>x.onclick=()=>{document.getElementById('spaceiSocialPeople1000').classList.remove('show');if(window.openUserProfile)window.openUserProfile(x.dataset.h)});
+    }catch(e){box.innerHTML='<div class="small">People search is temporarily unavailable.</div>'}
+  }
+
+  async function openVideos(){
+    document.getElementById('spaceiSocialVideos1000').classList.add('show');
+    await renderVideos();
+  }
+  async function renderVideos(){
+    const q=document.getElementById('spxVideoSearch').value.trim().toLowerCase();
+    const box=document.getElementById('spxVideoFeed');
+    try{
+      const d=await getJSON(API+'?action=videos');
+      const vids=(d.videos||[]).filter(v=>!q||((v.user+' '+v.handle+' '+v.title+' '+v.caption).toLowerCase().includes(q)));
+      box.innerHTML=vids.length?vids.map(v=>'<section class="spxSlide"><article class="spxCard">'+(v.src?'<video playsinline muted loop preload="metadata" src="'+esc(v.src)+'"></video>':'<div style="height:78%;display:grid;place-items:center;font-size:70px">🎬</div>')+'<div class="spxInfo"><b>'+esc(v.user)+' <span class="spxHandle">'+esc(v.handle)+'</span></b><div class="spxMeta">'+esc(v.title)+'</div><div>'+esc(v.caption||'')+'</div></div></article></section>').join(''):'<section class="spxSlide"><article class="spxCard"><div class="spxInfo"><b>No public videos yet.</b><div class="small">Post a video as Public to make it appear here.</div></div></article></section>';
+      const obs=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;if(e.isIntersecting){v.play?.().catch(()=>{});}else v.pause?.()}),{root:box,threshold:.7});
+      box.querySelectorAll('video').forEach(v=>obs.observe(v));
+    }catch(e){box.innerHTML='<section class="spxSlide"><article class="spxCard"><div class="spxInfo">Videos are temporarily unavailable.</div></article></section>'}
+  }
+
+  function installPrivacy(){
+    const panel=document.getElementById('createPanel');if(!panel||document.getElementById('spxPrivacyRow'))return;
+    const row=document.createElement('div');row.id='spxPrivacyRow';row.innerHTML='<label>Who can watch this video?</label><select id="spxPrivacy"><option value="public">🌎 Public — anyone on SPACEI</option><option value="private">🔒 Private — only me</option></select>';
+    panel.querySelector('.notice')?.before(row);
+    const notice=panel.querySelector('.notice');if(notice)notice.textContent='Public videos are uploaded to SPACEI. Private videos stay on this device and are never added to the public feed.';
+  }
+
+  async function createVideo(){
+    const title=document.getElementById('videoTitle').value.trim(),caption=document.getElementById('videoCaption').value.trim();
+    if(!title)return toast('Give the video a title');
+    let h=handle();
+    if(!h)try{h=await ensureAccount((JSON.parse(localStorage.getItem('spacei_onboarding_profile')||'{}').name)||'SPACEI User')}catch(e){return toast(e.message)}
+    const privacy=document.getElementById('spxPrivacy').value;
+    const file=document.getElementById('videoFile').files[0];
+    let dataUrl='';
+    if(file){
+      if(file.size>4000000&&privacy==='public')return toast('Public videos must be 4 MB or smaller right now.');
+      if(file.size<=4000000){
+        dataUrl=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(file)});
+      }else if(privacy==='private'){
+        dataUrl=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(file)});
+      }
+    }
+    if(privacy==='private'){
+      const vids=JSON.parse(localStorage.getItem('spacei_videos_074')||'[]');
+      vids.unshift({id:Date.now(),user:handle(),title,caption,privacy:'private',dataUrl,likes:0});
+      localStorage.setItem('spacei_videos_074',JSON.stringify(vids));
+      toast('🔒 Private video saved. Only you can see it on this device.');
+    }else{
+      try{await postJSON('video',{handle:h,title,caption,privacy:'public',dataUrl});toast('🌎 Public video posted!')}catch(e){return toast(e.message)}
+    }
+    document.getElementById('videoTitle').value='';document.getElementById('videoCaption').value='';document.getElementById('videoFile').value='';
+    document.getElementById('spxPrivacy').value='public';closePanel('createPanel');openVideos();
+  }
+
+  function addNav(){
+    const nav=document.getElementById('bottomNav');if(!nav||document.getElementById('spxVideosNav'))return;
+    const b=document.createElement('button');b.id='spxVideosNav';b.innerHTML='🎥<br><span class="small">Videos</span>';b.addEventListener('click',openVideos);
+    nav.insertBefore(b,nav.querySelector('[data-nav="create"]')||null);
+    const people=document.createElement('button');people.id='spxPeopleTop';people.textContent='👥 People';people.addEventListener('click',openPeople);
+    document.querySelector('header')?.appendChild(people);
+  }
+
+  document.addEventListener('click',e=>{
+    if(e.target.matches?.('#spxPeopleBack'))document.getElementById('spaceiSocialPeople1000').classList.remove('show');
+    if(e.target.matches?.('#spxVideosBack'))document.getElementById('spaceiSocialVideos1000').classList.remove('show');
+    if(e.target.closest?.('#postVideoBtn')){e.preventDefault();e.stopImmediatePropagation();createVideo();}
+    if(e.target.closest?.('#saveProfileBtn'))setTimeout(syncProfile,250);
+  },true);
+
+  document.getElementById('spxPeopleSearch').addEventListener('input',()=>{clearTimeout(window.spxSearchTimer);window.spxSearchTimer=setTimeout(renderPeople,180)});
+  document.getElementById('spxVideoSearch').addEventListener('input',()=>{clearTimeout(window.spxVideoTimer);window.spxVideoTimer=setTimeout(renderVideos,180)});
+
+  const originalComplete=window.completeOnboarding;
+  window.completeOnboarding=async function(){
+    const name=document.getElementById('onboardName')?.value.trim()||'SPACEI User';
+    try{
+      await originalComplete();
+      const h=await ensureAccount(name);
+      const status=document.getElementById('onboardStatus');if(status)status.innerHTML='<b>Your permanent SPACEI ID:</b> <span style="font-size:18px">'+esc(h)+'</span><br><span class="small">You cannot change this @user ID.</span>';
+      addIdCard();syncProfile();
+    }catch(e){const status=document.getElementById('onboardStatus');if(status)status.textContent='Account setup could not finish: '+e.message}
+  };
+
+  window.addEventListener('load',async()=>{
+    addNav();installPrivacy();addIdCard();
+    const name=(JSON.parse(localStorage.getItem('spacei_onboarding_profile')||'{}').name)||JSON.parse(localStorage.getItem('spacei_profile_074')||'{}').username||'';
+    if(name && !handle()){try{await ensureAccount(name)}catch(e){}}
+    if(handle())syncProfile();
+    const ph=document.getElementById('profileHandle');if(ph)ph.textContent=handle()||ph.textContent;
+    const panel=document.getElementById('profilePanel');if(panel&&handle())addIdCard();
+  });
+})();
+</script>
 </body></html>`;
  }
 
