@@ -37,7 +37,37 @@ export default async (req: Request) => {
       ? data.output.flatMap((item: any) => item?.content || []).find((part: any) => part?.type === "output_text")?.text
       : undefined;
 
-    return Response.json({ ok: true, text: text || "No web-search answer was returned." });
+    // Pull source metadata from OpenAI web-search annotations so SPACEI can render
+    // the same kind of small site cards used by modern AI search UIs.
+    const sources: Array<{ url: string; title: string; domain: string }> = [];
+    const seen = new Set<string>();
+    const outputItems = Array.isArray(data?.output) ? data.output : [];
+    for (const item of outputItems) {
+      for (const part of (item?.content || [])) {
+        const annotations = Array.isArray(part?.annotations) ? part.annotations : [];
+        for (const annotation of annotations) {
+          const url = typeof annotation?.url === "string" ? annotation.url : "";
+          if (!url || seen.has(url)) continue;
+          seen.add(url);
+          try {
+            const parsed = new URL(url);
+            const domain = parsed.hostname.replace(/^www\\./, "");
+            const title = typeof annotation?.title === "string" && annotation.title.trim()
+              ? annotation.title.trim()
+              : domain;
+            sources.push({ url, title, domain });
+          } catch {
+            // Ignore malformed source URLs rather than breaking the search result.
+          }
+        }
+      }
+    }
+
+    return Response.json({
+      ok: true,
+      text: text || "No web-search answer was returned.",
+      sources: sources.slice(0, 8)
+    });
   } catch (error) {
     console.error("SPACEI web search function error", error);
     return Response.json({ error: "SPACEI web-search backend error." }, { status: 500 });
