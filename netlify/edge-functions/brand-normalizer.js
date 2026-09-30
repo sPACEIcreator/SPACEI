@@ -5,12 +5,12 @@ export default async (request, context) => {
   if (!type.includes("text/html")) return response;
 
   let html = await response.text();
-  html = html.split("SPΛCEI").join("SPΛCΞI");
+  html = html.split("SPΛCEI").join("SPΛCEI");
 
   const addon = String.raw`
 <script id="spaceiBrandNormalizer">
 (()=>{
-  const from='SPΛCEI', to='SPΛCΞI';
+  const from='SPΛCEI', to='SPΛCEI';
   const fixNode=node=>{
     if(node.nodeType===Node.TEXT_NODE){
       if(node.nodeValue&&node.nodeValue.includes(from)) node.nodeValue=node.nodeValue.split(from).join(to);
