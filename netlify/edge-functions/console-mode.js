@@ -43,4 +43,4 @@ html.spacei-console #composer{padding-bottom:max(10px,env(safe-area-inset-bottom
   return new Response(html, { status: response.status, statusText: response.statusText, headers });
 };
 
-export const config = { path: "/" };
+export const config = { path: "/", onError: "continue" };
