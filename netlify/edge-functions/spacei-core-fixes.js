@@ -69,9 +69,6 @@ export default async (request, context) => {
 })();
 </script>`;
 
-  const aiMenuFix = "\n<script id=\"spaceiAIMenuDeduper1004\">\n(()=>{function fix(){\n  const panels=[...document.querySelectorAll('#aiFeatures804')];\n  panels.slice(1).forEach(x=>x.remove());\n  const opens=[...document.querySelectorAll('[onclick*=\"openAIFeatures804\"]')];\n  opens.slice(1).forEach(x=>x.remove());\n  const panel=document.querySelector('#aiFeatures804');\n  if(panel){\n    const seen=new Set();\n    panel.querySelectorAll('#aiFeatureGrid804 button').forEach(b=>{\n      const k=(b.getAttribute('onclick')||'')+'|'+b.textContent.trim();\n      if(seen.has(k))b.remove();else seen.add(k);\n    });\n  }\n}\nif(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fix,{once:true});else fix();\nnew MutationObserver(fix).observe(document.documentElement,{childList:true,subtree:true});\n})();\n</script>";
-  html = html.includes("</body>") ? html.replace("</body>", aiMenuFix + "</body>") : html + aiMenuFix;
-
   const output = html.includes("</body>") ? html.replace("</body>", patch + "</body>") : html + patch;
   const headers = new Headers(response.headers);
   headers.delete("content-length");
