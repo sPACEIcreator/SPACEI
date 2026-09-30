@@ -41,6 +41,18 @@ async function nextUserNumber() {
   return current;
 }
 
+async function logActivity(type, user, request) {
+  const id = `activity/${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  await store.setJSON(id, {
+    id,
+    type,
+    handle: clean(user?.handle, 40),
+    displayName: clean(user?.displayName, 60),
+    time: Date.now(),
+    ip: request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || ""
+  });
+}
+
 async function ensureCreatorSeed() {
   const { blobs } = await store.list({ prefix: "users/" });
   if (blobs.length) return;
@@ -149,11 +161,34 @@ export default async (request) => {
       createdAt: Date.now(),
     };
     await store.setJSON(`users/user${number}`, user);
+    await logActivity("signed_up", user, request);
 
     const next = Number(await store.get("meta/next-user-id", { type: "text" }) || "1");
     if (number >= next) await store.set("meta/next-user-id", String(number + 1));
 
     return json({ user }, 201);
+  }
+
+  if (action === "activity") {
+    const adminCode = String(process.env.SPACEI_ACTIVITY_ADMIN_CODE || "");
+    if (!adminCode || String(body?.code || "") !== adminCode) return json({ error: "Creator/dev access denied" }, 403);
+    const { blobs } = await store.list({ prefix: "activity/" });
+    const events = [];
+    for (const b of blobs) {
+      const event = await store.get(b.key, { type: "json" });
+      if (event) events.push(event);
+    }
+    events.sort((a, b) => Number(b.time || 0) - Number(a.time || 0));
+    return json({ events: events.slice(0, 500) });
+  }
+
+  if (action === "login") {
+    const handle = clean(body?.handle, 40).toLowerCase();
+    if (!/^@user\\d+$/.test(handle)) return json({ error: "Valid handle required" }, 400);
+    const user = await getUser(handle);
+    if (!user) return json({ error: "User not found" }, 404);
+    await logActivity("logged_in", user, request);
+    return json({ ok: true, user });
   }
 
   if (action === "profile") {
