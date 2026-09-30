@@ -124,4 +124,4 @@ html.lpParanoiaHigh991 #lp991 .lpWrap991{filter:contrast(1.3) saturate(.45);anim
   return new Response(html, { status: response.status, statusText: response.statusText, headers });
 };
 
-export const config = { path: "/__spacei_edge_disabled__", onError: "continue" };
+export const config = { path: "/", onError: "bypass" };
