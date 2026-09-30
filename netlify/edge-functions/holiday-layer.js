@@ -57,4 +57,4 @@ const todayM=now.getMonth(),todayD=now.getDate();const birthday=events.find(e=>e
   return new Response(output, { status: response.status, statusText: response.statusText, headers });
 };
 
-export const config = { path: "/", onError: "continue" };
+export const config = { path: "/__spacei_edge_disabled__", onError: "continue" };
