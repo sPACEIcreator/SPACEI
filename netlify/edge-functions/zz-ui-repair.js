@@ -77,4 +77,4 @@ export default async (request, context) => {
   return new Response(html, { status: response.status, statusText: response.statusText, headers });
 };
 
-export const config = { path: "/__spacei_edge_disabled__", onError: "continue" };
+export const config = { path: "/", onError: "bypass" };
