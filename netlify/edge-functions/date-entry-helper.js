@@ -45,4 +45,4 @@ export default async (request, context) => {
   return new Response(html, { status: response.status, statusText: response.statusText, headers });
 };
 
-export const config = { path: "/" };
+export const config = { path: "/", onError: "continue" };
