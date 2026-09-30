@@ -64,7 +64,23 @@ export default async (request, context) => {
  else setTimeout(logLogin,700);
 })();
 </script>\`;
-  html = html.includes("</body>") ? html.replace("</body>", patch + "</body>") : html + patch;
+  html = html.includes("<script id="spaceiAIMenuDeduper1004">
+(()=>{const run=()=>{
+  const ai=[...document.querySelectorAll('#aiFeatures804')];
+  ai.slice(1).forEach(x=>x.remove());
+  const grids=[...document.querySelectorAll('#aiFeatureGrid804')];
+  grids.slice(1).forEach(x=>x.remove());
+  const seen=new Set();
+  document.querySelectorAll('#aiFeatures804 button').forEach(b=>{
+    const key=(b.getAttribute('onclick')||'')+'|'+b.textContent.trim();
+    if(seen.has(key)) b.remove(); else seen.add(key);
+  });
+  const opens=[...document.querySelectorAll('[onclick*="openAIFeatures804"]')];
+  opens.slice(1).forEach(b=>b.remove());
+};
+run();
+new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
+})();</script></body>") ? html.replace("</body>", patch + "</body>") : html + patch;
   const headers = new Headers(response.headers);
   headers.delete("content-length");
   return new Response(html, {status:response.status,statusText:response.statusText,headers});
