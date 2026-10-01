@@ -170,8 +170,9 @@ export default async (request) => {
   }
 
   if (action === "activity") {
-    const adminCode = String(process.env.SPACEI_ACTIVITY_ADMIN_CODE || "");
-    if (!adminCode || String(body?.code || "") !== adminCode) return json({ error: "Creator/dev access denied" }, 403);
+    const creatorUser = clean(body?.creatorUsername, 60).toLowerCase();
+    // Reuse SPACEI's existing creator/dev authorization identity; no new activity code.
+    if (creatorUser !== "oreopuggy") return json({ error: "Creator/dev access denied" }, 403);
     const { blobs } = await store.list({ prefix: "activity/" });
     const events = [];
     for (const b of blobs) {
@@ -184,7 +185,7 @@ export default async (request) => {
 
   if (action === "login") {
     const handle = clean(body?.handle, 40).toLowerCase();
-    if (!/^@user\\d+$/.test(handle)) return json({ error: "Valid handle required" }, 400);
+    if (!/^@user\d+$/.test(handle)) return json({ error: "Valid handle required" }, 400);
     const user = await getUser(handle);
     if (!user) return json({ error: "User not found" }, 404);
     await logActivity("logged_in", user, request);
