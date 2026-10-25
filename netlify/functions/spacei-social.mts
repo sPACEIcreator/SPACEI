@@ -85,6 +85,36 @@ export default async (request) => {
       });
     }
 
+    // Public profile lookup: profile pages can resolve the same handle returned by People.
+    // Keep registration and the New User feed untouched.
+    if (action === "profile") {
+      const requested = clean(
+        url.searchParams.get("handle") ||
+        url.searchParams.get("userId") ||
+        url.searchParams.get("id"),
+        80
+      ).toLowerCase();
+      if (!requested) return json({ error: "Handle required" }, 400);
+
+      if (/^@?user\d+$/.test(requested)) {
+        const user = await getUser(requested);
+        if (!user) return json({ error: "User not found" }, 404);
+        return json({ user });
+      }
+
+      // Also resolve a displayed username/name when a profile link passes that value
+      // instead of the canonical @userN handle. Only return exact matches.
+      const { blobs } = await store.list({ prefix: "users/" });
+      for (const b of blobs) {
+        const user = await store.get(b.key, { type: "json" });
+        if (!user) continue;
+        const candidates = [user.username, user.displayName]
+          .map(value => clean(value, 120).toLowerCase());
+        if (candidates.includes(requested.replace(/^@/, ""))) return json({ user });
+      }
+      return json({ error: "User not found" }, 404);
+    }
+
     if (action === "users") {
       await ensureCreatorSeed();
       const q = clean(url.searchParams.get("q"), 80).toLowerCase();
