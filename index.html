@@ -3394,9 +3394,29 @@ body.easyReadMode .sheet{line-height:1.75!important}
   let profileFollows=JSON.parse(localStorage.getItem('spacei_profile_follows_0723')||'{}');
 
   window.openUserProfile=function(username){
-    const key=String(username||'').toLowerCase();
-    const p=profiles[key]||profiles[username];
-    if(!p)return toast('Profile not found');
+    // People search returns server-side @handles, while the legacy profile
+    // cache is keyed by local usernames. Accept both shapes so remote users
+    // can open even when their profile has not been cached on this device.
+    const supplied=(username&&typeof username==='object')?username:null;
+    const raw=supplied?(supplied.handle||supplied.username||''):String(username||'');
+    const key=String(raw).toLowerCase();
+    let p=profiles[key]||profiles[raw]||profiles[key.replace(/^@/,'')];
+    if(!p&&supplied){
+      p={
+        username:raw.replace(/^@/,''),
+        handle:raw,
+        displayName:supplied.displayName||supplied.username||raw,
+        bio:supplied.bio||'',
+        avatar:supplied.avatar||'👤',
+        verified:!!supplied.verified,
+        title:supplied.title||'',
+        following:Number(supplied.following||0),
+        followers:Number(supplied.followers||0),
+        likes:Number(supplied.likes||0),
+        videos:Array.isArray(supplied.videos)?supplied.videos:[]
+      };
+    }
+    if(!p)return toast('Could not load this profile yet. Try refreshing People.');
     activeProfileUser=p;
     document.getElementById('userProfilePage').classList.add('show');
     renderUserProfile();
@@ -9978,7 +9998,7 @@ addEventListener('resize',()=>{if(document.getElementById('warpDriveGame849')?.c
     try{
       const d=await getJSON(API+'?action=users&q='+encodeURIComponent(q));
       box.innerHTML=d.users.length?d.users.map(u=>'<div class="spxUser" data-h="'+esc(u.handle)+'"><div class="spxAvatar">👤</div><div><b>'+esc(u.displayName)+'</b><div class="spxHandle">'+esc(u.handle)+'</div></div></div>').join(''):'<div class="small">No matching users.</div>';
-      box.querySelectorAll('.spxUser').forEach(x=>x.onclick=()=>{document.getElementById('spaceiSocialPeople1000').classList.remove('show');if(window.openUserProfile)window.openUserProfile(x.dataset.h)});
+      box.querySelectorAll('.spxUser').forEach(x=>x.onclick=()=>{const u=(d.users||[]).find(v=>String(v.handle)===String(x.dataset.h));document.getElementById('spaceiSocialPeople1000').classList.remove('show');if(window.openUserProfile)window.openUserProfile(u||{handle:x.dataset.h,displayName:x.querySelector('b')?.textContent||x.dataset.h});});
     }catch(e){box.innerHTML='<div class="small">People search is temporarily unavailable.</div>'}
   }
 
