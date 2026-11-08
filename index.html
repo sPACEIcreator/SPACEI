@@ -1046,7 +1046,7 @@ body.spaceiReducedMotion842 *,body.spaceiReducedMotion842 *::before,body.spaceiR
   <button id="petsBtn">🐾 Pets</button>
   <button id="learnCodeTabV1" type="button" onclick="openLearnCodeV1()">📘 Learn Code</button>
   <button id="settingsBtn">⚙ Settings</button><button id="creditsBtn808" onclick="openCredits808()">📜 Credits</button><button id="aiFeaturesBtn804" type="button" onclick="openAIFeatures804()">✨ AI Features</button>
-  <button id="devsBtn">💬 Devs</button><button onclick="openSecurity40()">🔐 Security</button><button onclick="openProtection47()">🛡️ Protection</button><button onclick="openSafeWeb55()">🦠 Safe Web</button><button id="musicBtnMain60" onclick="openMusic60()">🎵 Music</button><button onclick="openDonate62()">💜 Donate</button><button onclick="openDeviceSupport49()">💻 Support</button><button onclick="openPrivacy51()">🔒 Privacy</button><button id="testCenterBtn44" onclick="openTest44()">🧪 Test</button><button onclick="openPetStudio41()">🐾 Pet Studio</button><button onclick="openShop()">🛒 Shop</button><button onclick="openPanel('moderationPanel');renderModeration()">🛡️ Moderate</button>
+  <button id="devsBtn">💬 Devs</button><button onclick="openSecurity40()">🔐 Security</button><button onclick="openProtection47()">🛡️ Protection</button><button onclick="openSafeWeb55()">🦠 Safe Web</button><button id="musicBtnMain60" onclick="openMusic60()">🎵 Music</button><button onclick="openDonate62()">💜 Donate</button><button onclick="openDeviceSupport49()">💻 Support</button><button onclick="openPrivacy51()">🔒 Privacy</button><button id="testCenterBtn44" onclick="openTest44()">🧪 Test</button><button onclick="openPetStudio41()">🐾 Pet Studio</button><button onclick="openPanel('moderationPanel');renderModeration()">🛡️ Moderate</button>
 </header>
 
 <main id="chat">
@@ -15458,58 +15458,48 @@ setTimeout(wire875,500);
 </style>
 
 <section id="learnCodePanelV1" style="display:none;position:fixed;inset:0;z-index:10050;background:#050817;color:#fff;overflow:auto;padding:14px">
- <div style="max-width:1000px;margin:auto">
-  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;top:0;background:#050817;padding:8px 0;z-index:2">
-   <div style="margin-right:auto"><b style="font-size:22px">📘 Learn Code</b><div style="color:#aab6dc;font-size:13px">Learn the basics, then build something playable.</div></div>
+ <div style="max-width:1050px;margin:auto">
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;top:0;background:#050817;padding:8px 0;z-index:5">
+   <div style="margin-right:auto"><b style="font-size:23px">📘 SPΛCEI Learn Code</b><div style="color:#aab6dc;font-size:13px">Your AI coding tutor • Learn by building games</div></div>
    <button type="button" onclick="closeLearnCodeV1()">✕ Close</button>
   </div>
-
   <div style="background:#111a38;border:1px solid #5264a0;border-radius:16px;padding:14px;margin:12px 0">
-   <b>🎯 Ready status</b>
-   <p style="color:#c5ccec;margin:6px 0 10px">Pick the level that feels right. You can change it anytime.</p>
-   <div id="learnCodeLevelsV2" style="display:flex;gap:8px;flex-wrap:wrap">
-    <button type="button" data-level="Beginner" onclick="setLearnLevelV2('Beginner')">Beginner</button>
-    <button type="button" data-level="Noob" onclick="setLearnLevelV2('Noob')">Noob</button>
-    <button type="button" data-level="Pro" onclick="setLearnLevelV2('Pro')">Pro</button>
-    <button type="button" data-level="Awesome" onclick="setLearnLevelV2('Awesome')">Awesome</button>
-   </div>
-   <div id="learnLevelStatusV2" style="margin-top:10px;color:#9fe7ff">Current level: Beginner</div>
-   <div id="learnGameMissionV2" style="display:none;margin-top:12px;padding:12px;border-radius:12px;background:#080f24;border:1px solid #5264a0">
-    <b>🏆 Awesome level challenge: Build your own mini-game!</b>
-    <p style="color:#c5ccec">Create a mini-game with a visible button, a score or points counter, and JavaScript that changes the game when the button is clicked. Then press Run Game and Check My Game.</p>
-    <textarea id="learnGameBuildV2" spellcheck="false" placeholder="Write your mini-game HTML, CSS and JavaScript here..." style="width:100%;min-height:260px;resize:vertical;background:#050a18;color:#d9e7ff;border:1px solid #5264a0;border-radius:10px;padding:12px;font:13px/1.5 ui-monospace,monospace"></textarea>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
-     <button type="button" onclick="runLearnGameV2()">▶ Run Game</button>
-     <button type="button" onclick="checkLearnGameV2()">✅ Check My Game</button>
-     <button type="button" onclick="showLearnLessonV2()">📚 Review lesson</button>
-    </div>
-    <div id="learnGameFeedbackV2" style="color:#9fe7ff;font-size:13px">Your game should include a button, a score/points display, and working JavaScript click behavior.</div>
-    <iframe id="learnGamePreviewV2" title="Your mini-game preview" sandbox="allow-scripts" style="width:100%;height:300px;background:#fff;border:1px solid #5264a0;border-radius:12px;margin-top:8px"></iframe>
+   <b>🎓 Your coding journey</b>
+   <div id="lcRankText" style="margin:8px 0;color:#aeeaff">Beginner • Start your first project</div>
+   <div style="height:13px;background:#050a18;border:1px solid #5264a0;border-radius:20px;overflow:hidden"><div id="lcProgressFill" style="height:100%;width:0%;background:linear-gradient(90deg,#7b61ff,#5ee7ff);transition:width .25s"></div></div>
+   <div id="lcProgressText" style="font-size:12px;color:#b9c6e8;margin-top:6px">0% complete • 0 / 4 projects</div>
+   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:12px;text-align:center;font-size:12px">
+    <div id="lcRankBeginner" style="padding:8px;border:1px solid #8c83ff;border-radius:9px;background:#25204b">Beginner</div>
+    <div id="lcRankNoob" style="padding:8px;border:1px solid #304071;border-radius:9px">Noob</div>
+    <div id="lcRankPro" style="padding:8px;border:1px solid #304071;border-radius:9px">Pro</div>
+    <div id="lcRankAwesome" style="padding:8px;border:1px solid #304071;border-radius:9px">Awesome</div>
    </div>
   </div>
-  <div style="background:#111a38;border:1px solid #304071;border-radius:16px;padding:14px;margin:12px 0">
-   <b>What can coding make?</b>
-   <p style="color:#c5ccec;margin-bottom:0">Websites, mini-games, apps, animations, calculators, chat interfaces, and tools. You give the computer instructions using code.</p>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px">
-   <article style="background:#101832;border:1px solid #304071;border-radius:14px;padding:12px"><b>1. HTML — the structure</b><p style="color:#c5ccec">HTML adds things to a page: headings, text, buttons, and images.</p><code>&lt;h1&gt;My game&lt;/h1&gt;</code></article>
-   <article style="background:#101832;border:1px solid #304071;border-radius:14px;padding:12px"><b>2. CSS — the style</b><p style="color:#c5ccec">CSS changes colors, sizes, spacing, and layout.</p><code>body { color: violet; }</code></article>
-   <article style="background:#101832;border:1px solid #304071;border-radius:14px;padding:12px"><b>3. JavaScript — the actions</b><p style="color:#c5ccec">JavaScript makes buttons work, tracks scores, and adds game rules.</p><code>let score = 0;</code></article>
-  </div>
-  <div style="background:#111a38;border:1px solid #5264a0;border-radius:16px;padding:14px;margin:14px 0">
-   <b style="font-size:18px">🎮 Your first mini-game: Star Clicker</b>
-   <p style="color:#c5ccec">The code below makes a game. Click the star to earn points. Read the code, change the goal from <b>5</b> to <b>10</b>, then press Run Code.</p>
-   <label for="learnCodeEditorV1" style="display:block;margin:10px 0 6px">Your code (HTML + CSS + JavaScript)</label>
-   <textarea id="learnCodeEditorV1" spellcheck="false" style="width:100%;min-height:360px;resize:vertical;background:#070d20;color:#d9e6ff;border:1px solid #5264a0;border-radius:12px;padding:12px;font:13px/1.5 ui-monospace,monospace"></textarea>
-   <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
-    <button type="button" onclick="runLearnCodeV1()">▶ Run Code</button>
-    <button type="button" onclick="resetLearnCodeV1()">↺ Reset example</button>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
+   <div style="background:#0e1834;border:1px solid #304071;border-radius:15px;padding:13px">
+    <b>🤖 Your AI tutor</b>
+    <div id="lcTutorChat" style="height:280px;overflow:auto;background:#070d20;border:1px solid #293b6b;border-radius:10px;padding:10px;margin:10px 0;font-size:14px;white-space:pre-wrap"><div style="color:#aeeaff">Your tutor will say hi when you open Learn Code.</div></div>
+    <div style="display:flex;gap:7px"><input id="lcTutorInput" placeholder="Ask your tutor…" style="min-width:0;flex:1;background:#070d20;color:#fff;border:1px solid #40558b;border-radius:10px;padding:11px"><button type="button" id="lcTutorSend">Send</button></div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px"><button type="button" id="lcTutorExplain">Explain my code</button><button type="button" id="lcTutorHint">Give me a hint</button><button type="button" id="lcTutorNext">What's next?</button></div>
+    <div style="font-size:11px;color:#9eafd7;margin-top:8px">AI tutor replies use the SPΛCEI chat service. If that service is unavailable, built-in lesson guidance still works.</div>
    </div>
-   <div id="learnCodeStatusV1" style="color:#9fe7ff;font-size:13px;margin:8px 0">Tip: find the line const goal = 5; and change 5 to 10.</div>
-   <b>Live game preview</b>
-   <iframe id="learnCodePreviewV1" title="Star Clicker game preview" sandbox="allow-scripts" style="width:100%;height:360px;background:#fff;border:1px solid #5264a0;border-radius:12px;margin-top:8px"></iframe>
+   <div style="background:#0e1834;border:1px solid #304071;border-radius:15px;padding:13px">
+    <b>🧩 Current mini-game mission</b>
+    <div id="lcMissionTitle" style="font-size:18px;color:#aeeaff;margin:10px 0 5px">Project 1: Star Clicker</div>
+    <div id="lcMissionText" style="font-size:13px;color:#c5ccec;line-height:1.5">Make a button increase your score. Your tutor will walk you through it.</div>
+    <ol id="lcSteps" style="font-size:13px;color:#d7e2ff;padding-left:20px;line-height:1.6"></ol>
+    <div style="font-size:12px;color:#9eafd7;margin-top:8px">Complete the mission, run your game, and check it. The next game gets harder.</div>
+   </div>
   </div>
-  <div style="color:#aab6dc;font-size:13px;padding:4px 2px 24px">Your code runs in a sandboxed preview here. It does not change or publish the SPΛCEI website.</div>
+  <div style="background:#111a38;border:1px solid #5264a0;border-radius:16px;padding:14px;margin:12px 0">
+   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b style="font-size:18px">💻 Game Workshop</b><span style="margin-left:auto;color:#aab6dc;font-size:12px">HTML • CSS • JavaScript</span></div>
+   <p style="color:#c5ccec;font-size:13px">HTML builds the page, CSS styles it, and JavaScript makes the game interactive. Edit the code, then run it in the safe preview.</p>
+   <textarea id="lcCode" spellcheck="false" style="box-sizing:border-box;width:100%;min-height:340px;resize:vertical;background:#050a18;color:#d9e7ff;border:1px solid #5264a0;border-radius:10px;padding:12px;font:12px/1.5 ui-monospace,monospace"></textarea>
+   <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0"><button type="button" id="lcRun">▶ Run Game</button><button type="button" id="lcReset">↺ Reset starter</button><button type="button" id="lcCheck">✅ Check Mission</button></div>
+   <div id="lcStatus" style="font-size:13px;color:#aeeaff;margin:8px 0">Run your game and test it before checking your mission.</div>
+   <iframe id="lcPreview" title="Learn Code game preview" sandbox="allow-scripts" style="width:100%;height:360px;background:white;border:1px solid #5264a0;border-radius:12px"></iframe>
+  </div>
+  <div style="font-size:12px;color:#9eafd7;padding-bottom:25px">Progress is saved in this browser. The checker looks for the skills in each mission; it cannot guarantee every game is bug-free, so test your preview too. Your code is not published to SPΛCEI.</div>
  </div>
 </section>
 <button id="spaceiCodeStudioLauncherV1" type="button">🛠️ Add Code to Website</button>
@@ -15584,86 +15574,35 @@ setTimeout(wire875,500);
 </script>
 <script id="SPACEI_LEARN_CODE_V1">
 (function(){
- const starter="<!doctype html>\n<html>\n<head>\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<style>\nbody{font-family:system-ui;background:#101832;color:white;text-align:center;padding:24px}\n.card{max-width:360px;margin:30px auto;padding:24px;border:1px solid #5264a0;border-radius:18px;background:#182449}\nbutton{padding:12px 18px;border:0;border-radius:12px;background:#8b7cff;color:white;font-weight:bold;font-size:18px}\n#score{font-size:30px;color:#8ff}\n</style>\n</head>\n<body>\n<div class=\"card\">\n<h1>🚀 Star Clicker</h1>\n<p>Click the star to earn points!</p>\n<div id=\"score\">0</div>\n<button id=\"star\">⭐ Click me!</button>\n<p id=\"message\">Can you reach 5 points?</p>\n</div>\n<script>\nlet score = 0;\nconst goal = 5;\ndocument.getElementById('star').addEventListener('click', function(){\n  score = score + 1;\n  document.getElementById('score').textContent = score;\n  if(score >= goal){\n    document.getElementById('message').textContent = 'You won! Great coding!';\n  }\n});\n<\/script>\n</body>\n</html>";
- window.openLearnCodeV1=function(){
-  const p=document.getElementById('learnCodePanelV1');
-  if(p){p.style.display='block';document.body.style.overflow='hidden';}
- };
- window.closeLearnCodeV1=function(){
-  const p=document.getElementById('learnCodePanelV1');
-  if(p){p.style.display='none';document.body.style.removeProperty('overflow');}
- };
- window.runLearnCodeV1=function(){
-  const code=document.getElementById('learnCodeEditorV1').value;
-  if(!code.trim()){document.getElementById('learnCodeStatusV1').textContent='Add some code first.';return;}
-  document.getElementById('learnCodePreviewV1').srcdoc=code;
-  document.getElementById('learnCodeStatusV1').textContent='Preview refreshed! Try your game.';
- };
- window.resetLearnCodeV1=function(){
-  document.getElementById('learnCodeEditorV1').value=starter;
-  runLearnCodeV1();
-  document.getElementById('learnCodeStatusV1').textContent='Starter game restored. Change const goal = 5; to const goal = 10; then run it.';
- };
- document.addEventListener('DOMContentLoaded',function(){
-  const e=document.getElementById('learnCodeEditorV1');
-  if(e)e.value=starter;
-  const p=document.getElementById('learnCodePanelV1');
-  if(p){p.addEventListener('click',function(event){if(event.target===p)closeLearnCodeV1();});}
- });
-
- window.setLearnLevelV2=function(level){
-  const allowed=['Beginner','Noob','Pro','Awesome'];
-  if(!allowed.includes(level))return;
-  try{localStorage.setItem('spacei_learn_code_level_v2',level)}catch(e){}
-  const label=document.getElementById('learnLevelStatusV2');
-  if(label)label.textContent='Current level: '+level;
-  document.querySelectorAll('#learnCodeLevelsV2 button').forEach(b=>{
-   const active=b.getAttribute('data-level')===level;
-   b.style.background=active?'#6b68d8':'#182449';
-   b.style.border=active?'2px solid #a8e8ff':'1px solid #5264a0';
-  });
-  const mission=document.getElementById('learnGameMissionV2');
-  if(mission)mission.style.display=level==='Awesome'?'block':'none';
-  if(level==='Awesome'&&mission)document.getElementById('learnGameFeedbackV2').textContent='Your final challenge is ready. Build a mini-game and test it!';
- };
- window.runLearnGameV2=function(){
-  const code=document.getElementById('learnGameBuildV2').value;
-  if(!code.trim()){document.getElementById('learnGameFeedbackV2').textContent='Write some game code first, then run it.';return;}
-  document.getElementById('learnGamePreviewV2').srcdoc=code;
-  document.getElementById('learnGameFeedbackV2').textContent='Game preview refreshed. Try clicking your game button!';
- };
- window.showLearnLessonV2=function(){
-  const mission=document.getElementById('learnGameMissionV2');
-  if(mission)mission.style.display='none';
-  window.setLearnLevelV2('Pro');
-  document.getElementById('learnCodeStatusV1').textContent='Review HTML for structure, CSS for styling, and JavaScript for button actions. When ready, choose Awesome again to retry the game challenge.';
-  document.getElementById('learnCodePanelV1').scrollTo({top:0,behavior:'smooth'});
- };
- window.checkLearnGameV2=function(){
-  const code=document.getElementById('learnGameBuildV2').value;
-  const hasButton=/<button\b/i.test(code);
-  const hasScript=/<script\b/i.test(code);
-  const hasScore=/(score|points|counter)/i.test(code);
-  const hasClick=/(addEventListener\s*\(\s*['"]click['"]|onclick\s*=)/i.test(code);
-  if(hasButton&&hasScript&&hasScore&&hasClick){
-   document.getElementById('learnGameFeedbackV2').textContent='🎉 Challenge passed! Your code has the key parts of a mini-game. Run it and test the button to make sure it works. You earned Awesome Builder!';
-   document.getElementById('learnLevelStatusV2').textContent='Current level: Awesome — Builder challenge passed!';
-   try{localStorage.setItem('spacei_learn_code_level_v2','Awesome')}catch(e){}
-  }else{
-   document.getElementById('learnGameFeedbackV2').textContent='Not quite yet — that is okay! The checker needs a <button>, a <script>, a score/points/counter, and click behavior (addEventListener("click") or onclick). Review the lesson and try again.';
-   window.setLearnLevelV2('Pro');
-   document.getElementById('learnGameMissionV2').style.display='none';
-   document.getElementById('learnCodeStatusV1').textContent='Let’s practice again. Add the missing game parts, then choose Awesome when you are ready to retry.';
-   document.getElementById('learnCodePanelV1').scrollTo({top:0,behavior:'smooth'});
-  }
- };
- document.addEventListener('DOMContentLoaded',function(){
-  let level='Beginner';
-  try{const saved=localStorage.getItem('spacei_learn_code_level_v2');if(['Beginner','Noob','Pro','Awesome'].includes(saved))level=saved}catch(e){}
-  window.setLearnLevelV2(level);
- });
-
- window.addEventListener('keydown',function(e){if(e.key==='Escape')closeLearnCodeV1();});
+ const $=id=>document.getElementById(id);
+ const projects=[
+  {title:"Star Clicker",rank:"Beginner",desc:"Build a button that adds points to a score.",steps:["Find the score variable. It stores how many points the player has.","Find the button in the HTML. It is what the player clicks.","Use a click event so JavaScript knows when the button is pressed.","Increase the score and show the new number on the page."],test:c=>/let\s+score/i.test(c)&&/addEventListener\s*\(\s*['"]click['"]/i.test(c)&&/textContent|innerText/i.test(c),code:`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:system-ui;text-align:center;background:#101832;color:white;padding:30px}.card{max-width:360px;margin:auto;padding:24px;background:#1b2850;border-radius:18px}button{padding:14px 22px;border:0;border-radius:12px;background:#8b7cff;color:white;font-size:18px}#score{font-size:36px;color:#8ff}</style></head><body><div class="card"><h1>⭐ Star Clicker</h1><p>Click to earn points!</p><div id="score">0</div><button id="star">Click me</button></div><script>let score=0;document.getElementById('star').addEventListener('click',()=>{score++;document.getElementById('score').textContent=score})<\/script></body></html>`},
+  {title:"Color Changer",rank:"Noob",desc:"Make a game button change the scene and track how many times it changes.",steps:["Create a button players can press.","Use a click event to detect each press.","Change the page background using style.backgroundColor.","Keep a counter and update the counter on every click."],test:c=>/addEventListener\s*\(\s*['"]click['"]/i.test(c)&&/backgroundColor/i.test(c)&&/(count|score)/i.test(c),code:`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:system-ui;text-align:center;background:#182449;color:white;padding:35px}button{padding:14px;border:0;border-radius:12px;background:#72d6ff;font-size:18px}</style></head><body><h1>🎨 Color Changer</h1><p>Changes: <b id="count">0</b></p><button id="change">Change scene</button><script>let count=0;const colors=['#182449','#542b73','#145c65','#7a3b45'];document.getElementById('change').addEventListener('click',()=>{count++;document.body.style.backgroundColor=colors[count%colors.length];document.getElementById('count').textContent=count})<\/script></body></html>`},
+  {title:"Quick Quiz",rank:"Pro",desc:"Build a quiz that checks an answer, gives feedback, and tracks points.",steps:["Add a question and an answer input.","Create a button that checks the answer.","Use an if/else decision to decide if the answer is correct.","Update the score and show feedback to the player."],test:c=>/if\s*\(/i.test(c)&&/(score|points)/i.test(c)&&/(correct|try again|wrong)/i.test(c)&&/addEventListener\s*\(\s*['"]click['"]/i.test(c),code:`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:system-ui;background:#101832;color:white;text-align:center;padding:30px}input,button{padding:12px;border-radius:10px;border:0;margin:5px}button{background:#8b7cff;color:white}</style></head><body><h1>🧠 Quick Quiz</h1><p>What is 6 × 7?</p><input id="answer" placeholder="Your answer"><button id="check">Check</button><p id="result">Points: <b id="score">0</b></p><script>let score=0;document.getElementById('check').addEventListener('click',()=>{const answer=document.getElementById('answer').value;if(answer==='42'){score++;document.getElementById('result').textContent='Correct! Points: '+score}else{document.getElementById('result').textContent='Try again! Points: '+score}document.getElementById('score').textContent=score})<\/script></body></html>`},
+  {title:"Catch the Star",rank:"Awesome",desc:"Create a target that moves, a timer, and a score. This is your final builder challenge.",steps:["Create a target button and a score display.","When the target is clicked, add one point.","Move the target to a random position after each click.","Add a countdown timer and finish message when time runs out."],test:c=>/Math\.random\s*\(/i.test(c)&&/(score|points)/i.test(c)&&/(setInterval|setTimeout)/i.test(c)&&/addEventListener\s*\(\s*['"]click['"]/i.test(c),code:`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:system-ui;background:#101832;color:white;text-align:center;padding:18px}#arena{position:relative;height:280px;background:#1c2b55;border-radius:16px;margin-top:15px}#target{position:absolute;left:45%;top:42%;border:0;border-radius:50%;width:55px;height:55px;background:#ffdb59;font-size:25px}</style></head><body><h1>🚀 Catch the Star</h1><p>Score: <b id="score">0</b> • Time: <b id="time">15</b></p><div id="arena"><button id="target">⭐</button></div><p id="message">Catch as many as you can!</p><script>let score=0,time=15;const target=document.getElementById('target');target.addEventListener('click',()=>{if(time<=0)return;score++;document.getElementById('score').textContent=score;target.style.left=Math.floor(Math.random()*80)+'%';target.style.top=Math.floor(Math.random()*75)+'%'});const timer=setInterval(()=>{time--;document.getElementById('time').textContent=time;if(time<=0){clearInterval(timer);document.getElementById('message').textContent='Game over! Final score: '+score}},1000)<\/script></body></html>`}
+ ];
+ let index=0,started=false,chat=[];
+ const rankFor=n=>n===0?'Beginner':n===1?'Noob':n===2?'Pro':'Awesome';
+ const fallback="Hi! I'm your SPΛCEI coding tutor. 👋 Coding is giving a computer instructions. We'll learn HTML for structure, CSS for style, and JavaScript for actions. We'll build mini-games one step at a time. Let's start with Star Clicker: first, find the score variable in the starter code. It remembers how many stars you've earned!";
+ function append(role,text){const box=$('lcTutorChat');if(!box)return;const d=document.createElement('div');d.style.cssText='padding:9px 10px;margin:7px 0;border-radius:10px;white-space:pre-wrap;background:'+(role==='You'?'#25204b':'#12264a');d.innerHTML='<b>'+role+':</b> '+String(text).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));box.appendChild(d);box.scrollTop=box.scrollHeight;chat.push({role,text});}
+ async function askTutor(message){append('You',message);append('Tutor','Thinking…');const box=$('lcTutorChat');const thinking=box.lastChild;
+  const p=projects[index];const prompt="You are the friendly SPΛCEI Learn Code tutor for a beginner. Teach coding step by step, explain simply, encourage the learner, and never do the whole assignment without teaching. Current project: "+p.title+". Goal: "+p.desc+". Steps: "+p.steps.join(' | ')+". Learner code: "+$('lcCode').value.slice(0,9000)+". Learner says: "+message+". Reply with a clear next step and one small thing to try.";
+  try{const r=await fetch('/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:prompt})});const d=await r.json();if(!r.ok||!d.text)throw new Error(d.error||'Tutor unavailable');thinking.remove();append('Tutor',d.text);}
+  catch(e){thinking.remove();append('Tutor',message.toLowerCase().includes('hint')?'Hint: '+p.steps[Math.min(1,p.steps.length-1)]+' Try changing one small part, then run the game.': 'I can still guide you! '+p.steps[0]+' After that, run the preview and tell me what happened. The AI service is unavailable right now, but these lesson steps are ready.');}
+ }
+ function renderProgress(){const pct=Math.round(index/projects.length*100);const rank=rankFor(index);$('lcProgressFill').style.width=pct+'%';$('lcProgressText').textContent=pct+'% journey complete • '+index+' / '+projects.length+' projects passed';$('lcRankText').textContent=rank+' • '+(index===4?'All projects complete!':'Next: '+projects[index].title);['Beginner','Noob','Pro','Awesome'].forEach((r,i)=>{const el=$('lcRank'+r);el.style.borderColor=i<=index?'#8c83ff':'#304071';el.style.background=i===Math.min(index,3)?'#25204b':'transparent';});}
+ function loadProject(){const p=projects[index];if(!p){$('lcMissionTitle').textContent='🏆 Game Builder';$('lcMissionText').textContent='You completed the full coding path!';$('lcSteps').innerHTML='<li>You built all four games. Keep experimenting and make your own original game!</li>';$('lcCode').value='';renderProgress();return;} $('lcMissionTitle').textContent='Project '+(index+1)+': '+p.title+' • '+p.rank;$('lcMissionText').textContent=p.desc;$('lcSteps').innerHTML=p.steps.map(x=>'<li>'+x.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))+'</li>').join('');$('lcCode').value=p.code;$('lcPreview').srcdoc=p.code;$('lcStatus').textContent='Starter loaded. Follow the steps, edit the code, run it, then check your mission.';renderProgress();}
+ window.openLearnCodeV1=function(){const p=$('learnCodePanelV1');if(!p)return;p.style.display='block';document.body.style.overflow='hidden';if(!started){started=true;append('Tutor',fallback);loadProject();} };
+ window.closeLearnCodeV1=function(){const p=$('learnCodePanelV1');if(p){p.style.display='none';document.body.style.removeProperty('overflow');}};
+ window.runLearnCodeV1=()=>{$('lcPreview').srcdoc=$('lcCode').value;$('lcStatus').textContent='Preview refreshed. Test the game by clicking its controls.';};
+ window.resetLearnCodeV1=()=>loadProject();
+ window.setLearnLevelV2=()=>{};
+ window.runLearnGameV2=window.runLearnCodeV1;
+ window.showLearnLessonV2=()=>askTutor('Please review the lesson and explain the next step.');
+ window.checkLearnGameV2=window.checkLearnCodeMissionV1;
+ window.checkLearnCodeMissionV1=function(){if(index>=projects.length)return;const p=projects[index];const code=$('lcCode').value;if(!p.test(code)){ $('lcStatus').textContent='Not yet — compare your code with the mission steps. Ask your tutor for a hint, then try again.';askTutor('I checked my game but it did not pass. Please help me find which project requirement is missing.');return;}index++;try{localStorage.setItem('spacei_learn_progress_v3',String(index));}catch(e){}$('lcStatus').textContent='🎉 Mission passed! Loading your next, harder mini-game.';loadProject();append('Tutor','Nice work! You passed '+p.title+'. Your progress is saved. The next project is a little more challenging.');askTutor('Teach me the first step of my new project.');};
+ document.addEventListener('DOMContentLoaded',()=>{try{index=Math.max(0,Math.min(4,Number(localStorage.getItem('spacei_learn_progress_v3')||0)));}catch(e){}$('lcTutorSend')?.addEventListener('click',()=>{const v=$('lcTutorInput').value.trim();if(!v)return;$('lcTutorInput').value='';askTutor(v);});$('lcTutorInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')$('lcTutorSend').click();});$('lcTutorExplain')?.addEventListener('click',()=>askTutor('Please explain my current code line by line in beginner-friendly words.'));$('lcTutorHint')?.addEventListener('click',()=>askTutor('Give me a small hint for the current mini-game. Do not give the full solution.'));$('lcTutorNext')?.addEventListener('click',()=>askTutor('What is the next step I should do?'));$('lcRun')?.addEventListener('click',window.runLearnCodeV1);$('lcReset')?.addEventListener('click',window.resetLearnCodeV1);$('lcCheck')?.addEventListener('click',window.checkLearnCodeMissionV1);});
+ window.addEventListener('keydown',e=>{if(e.key==='Escape')closeLearnCodeV1();});
 })();
 </script>
 </body>
