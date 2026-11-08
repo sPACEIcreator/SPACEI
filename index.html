@@ -9957,20 +9957,23 @@ addEventListener('resize',()=>{if(document.getElementById('warpDriveGame849')?.c
   }
   function esc(v){const d=document.createElement('div');d.textContent=String(v??'');return d.innerHTML}
   async function ensureAccount(name){
-    if(handle())return handle();
+    const existingHandle=handle();
+    const existingToken=localStorage.getItem('spacei_auth_token')||'';
+    if(existingHandle&&existingToken)return existingHandle;
     const cleanName=(name||'SPACEI User').trim()||'SPACEI User';
-    let data;
+    const legacySlug=existingHandle.replace(/^@/,'').toLowerCase().replace(/[^a-z0-9._-]/g,'').slice(0,32);
+    const preferred=legacySlug.length>=3?legacySlug:(/^oreopuggy/i.test(cleanName)?'user1':null);
+    const payload={displayName:cleanName,username:cleanName,handle:preferred};
     try{
-      const preferred=/^oreopuggy/i.test(cleanName)?'@user1':null;
-      data=await postJSON('register',{displayName:cleanName,username:cleanName,handle:preferred});
+      const data=await postJSON('register',payload);
+      setHandle(data.user.handle);
+      if(data.token)localStorage.setItem('spacei_auth_token',data.token);
+      return data.user.handle;
     }catch(e){
-      if(e.message.includes('already exists')){
-        data=await postJSON('register',{displayName:cleanName,username:cleanName});
-      }else{throw e}
+      // Never silently claim an existing server account. Existing accounts need recovery.
+      if(existingHandle&&e.message.includes('already exists'))return existingHandle;
+      throw e;
     }
-    setHandle(data.user.handle);
-    if(data.token)localStorage.setItem('spacei_auth_token',data.token);
-    return data.user.handle;
   }
 
   async function syncProfile(){
@@ -9995,13 +9998,34 @@ addEventListener('resize',()=>{if(document.getElementById('warpDriveGame849')?.c
     await renderPeople();
   }
   async function renderPeople(){
-    const q=document.getElementById('spxPeopleSearch').value.trim();
+    const q=document.getElementById('spxPeopleSearch').value.trim().toLowerCase().replace(/^@/,'');
     const box=document.getElementById('spxPeopleResults');
+    let remote=[];
     try{
       const d=await getJSON(API+'?action=users&q='+encodeURIComponent(q));
-      box.innerHTML=d.users.length?d.users.map(u=>'<div class="spxUser" data-h="'+esc(u.handle)+'"><div class="spxAvatar">👤</div><div><b>'+esc(u.displayName)+'</b><div class="spxHandle">'+esc(u.handle)+'</div></div></div>').join(''):'<div class="small">No matching users.</div>';
-      box.querySelectorAll('.spxUser').forEach(x=>x.onclick=()=>{const u=(d.users||[]).find(v=>String(v.handle)===String(x.dataset.h));document.getElementById('spaceiSocialPeople1000').classList.remove('show');if(window.openUserProfile)window.openUserProfile(u||{handle:x.dataset.h,displayName:x.querySelector('b')?.textContent||x.dataset.h});});
-    }catch(e){box.innerHTML='<div class="small">People search is temporarily unavailable.</div>'}
+      remote=Array.isArray(d.users)?d.users:[];
+    }catch(e){}
+    // Merge the server directory with legacy profiles already saved on this device.
+    // This keeps older local accounts discoverable while they migrate to server accounts.
+    let local=[];
+    try{
+      const profiles=JSON.parse(localStorage.getItem('spacei_user_profiles_0723')||'{}');
+      local=Object.values(profiles).map(p=>({
+        handle:p.handle||('@'+String(p.username||'').toLowerCase().replace(/[^a-z0-9._-]/g,'')),
+        displayName:p.displayName||p.username||'SPACEI User',
+        bio:p.bio||'',title:p.title||'',verified:!!p.verified,
+        avatar:p.avatar||'👤'
+      })).filter(p=>p.handle&&p.handle.length>1);
+    }catch(e){}
+    const all=new Map();
+    [...remote,...local].forEach(u=>{
+      const h=String(u.handle||'').replace(/^@/,'').toLowerCase();
+      if(!h)return;
+      if(!q||(h+' '+String(u.displayName||'')).toLowerCase().includes(q))all.set(h,{...u,handle:'@'+h});
+    });
+    const users=[...all.values()].sort((a,b)=>String(a.displayName).localeCompare(String(b.displayName)));
+    box.innerHTML=users.length?users.map(u=>'<div class="spxUser" data-h="'+esc(u.handle)+'"><div class="spxAvatar">'+esc(u.avatar||'👤')+'</div><div><b>'+esc(u.displayName)+'</b><div class="spxHandle">'+esc(u.handle)+(u.title?' · '+esc(u.title):'')+'</div></div></div>').join(''):'<div class="small">No users found yet. Accounts appear here after they create or migrate their SPACEI account.</div>';
+    box.querySelectorAll('.spxUser').forEach(x=>x.onclick=()=>{const u=users.find(v=>String(v.handle)===String(x.dataset.h));document.getElementById('spaceiSocialPeople1000').classList.remove('show');if(window.openUserProfile)window.openUserProfile(u||{handle:x.dataset.h,displayName:x.querySelector('b')?.textContent||x.dataset.h});});
   }
 
   async function openVideos(){
