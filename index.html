@@ -10107,6 +10107,57 @@ addEventListener('resize',()=>{if(document.getElementById('warpDriveGame849')?.c
  window.addEventListener('online',offlineStatus);window.addEventListener('offline',offlineStatus);window.addEventListener('resize',offlineStatus);document.addEventListener('DOMContentLoaded',offlineStatus);setTimeout(offlineStatus,400);
 })();
 </script>
+
+<style id="spaceiUpdateNoticeCSS">
+#spaceiUpdateNotice2026{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:18px;background:#020617d9;backdrop-filter:blur(9px)}
+#spaceiUpdateNotice2026.open{display:flex}
+#spaceiUpdateNotice2026 .sun26{width:min(560px,100%);max-height:88vh;overflow:auto;background:linear-gradient(145deg,#111a38,#080d20);border:1px solid #6672d9;border-radius:22px;padding:20px;box-shadow:0 20px 80px #000b}
+#spaceiUpdateNotice2026 h2{margin:0 0 8px;font-size:23px}
+#spaceiUpdateNotice2026 p{color:#c5ccec;line-height:1.5}
+#spaceiUpdateNotice2026 .upd26{border:1px solid #304071;background:#0a1229;border-radius:13px;padding:11px;margin:9px 0}
+#spaceiUpdateNotice2026 .upd26 b{display:block;margin-bottom:4px}
+#spaceiUpdateNotice2026 .act26{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+#spaceiUpdateNotice2026 button{cursor:pointer}
+#spaceiUpdateNotice2026 .primary26{background:linear-gradient(90deg,#625cff,#00b9d7);border:0;font-weight:800}
+</style>
+<div id="spaceiUpdateNotice2026" role="dialog" aria-modal="true" aria-labelledby="spaceiUpdateTitle2026">
+ <div class="sun26">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+   <span style="font-size:12px;letter-spacing:1.5px;color:#9befff;font-weight:800">SPΛCEI UPDATE CENTER</span>
+   <span style="font-size:11px;color:#aeb9d9">NEW</span>
+  </div>
+  <h2 id="spaceiUpdateTitle2026">🚀 A new SPΛCEI update is here</h2>
+  <p>The Master Update rollout is underway. Open the update center to see the complete feature plan and what is being worked on.</p>
+  <div class="upd26"><b>🛡️ Accounts, security & moderation</b><span>Account upgrades, ban screen with appeal and timer, banned-users page, appeals and review.</span></div>
+  <div class="upd26"><b>⚖️ SPΛCEI Court</b><span>You are the Judge. @LawyerTim is the AI Lawyer. Court-entry notifications go to both roles.</span></div>
+  <div class="upd26"><b>🤖 SPΛCEI AI</b><span>AI modes, media and file tools, coding, writing, research and computer offline mode.</span></div>
+  <div class="upd26"><b>💬 Social & profiles</b><span>People search, profile bios, videos and titles, direct messages, attachments and notifications.</span></div>
+  <div class="upd26"><b>🎨 Community, safety & owner tools</b><span>Fan art, achievements, Website Creator, SAI, Trusted Friend, TFCA and owner title controls.</span></div>
+  <div class="act26">
+   <button type="button" class="primary26" id="spaceiGoUpdate2026">Go to new update</button>
+   <button type="button" id="spaceiCloseUpdate2026">Close</button>
+  </div>
+  <p style="font-size:11px;margin-bottom:0">This announcement appears once per browser for this update version. Features in the rollout plan are not all live yet.</p>
+ </div>
+</div>
+<script id="spaceiUpdateNotice2026JS">
+(()=>{
+ const VERSION='master-rollout-2026-11-08';
+ const modal=document.getElementById('spaceiUpdateNotice2026');
+ const close=()=>{modal?.classList.remove('open');try{localStorage.setItem('spacei_update_seen_'+VERSION,'1')}catch(e){}};
+ const show=()=>{try{if(!localStorage.getItem('spacei_update_seen_'+VERSION))modal?.classList.add('open')}catch(e){modal?.classList.add('open')}};
+ document.getElementById('spaceiCloseUpdate2026')?.addEventListener('click',close);
+ document.getElementById('spaceiGoUpdate2026')?.addEventListener('click',()=>{
+  close();
+  const target=document.getElementById('learnCodeTabV1')||document.getElementById('spxPeopleTop');
+  if(target){target.scrollIntoView?.({behavior:'smooth',block:'center'});}
+  else if(typeof window.toast==='function'){window.toast('SPΛCEI Master Update: rollout overview shown in the announcement.')}
+  else {alert('SPΛCEI Master Update rollout: accounts, moderation, Court, AI, social, community, safety and owner controls.')}
+ });
+ window.addEventListener('load',()=>setTimeout(show,700));
+})();
+</script>
+
 </body></html>`;
  }
 
