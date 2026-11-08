@@ -9969,6 +9969,7 @@ addEventListener('resize',()=>{if(document.getElementById('warpDriveGame849')?.c
       }else{throw e}
     }
     setHandle(data.user.handle);
+    if(data.token)localStorage.setItem('spacei_auth_token',data.token);
     return data.user.handle;
   }
 
