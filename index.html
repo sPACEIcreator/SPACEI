@@ -15438,5 +15438,91 @@ setTimeout(wire875,500);
 })();
 </script>
 
+
+<!-- SPACEI_CODE_STUDIO_V1: private local source editor + version history -->
+<style id="spaceiCodeStudioStylesV1">
+#spaceiCodeStudioLauncherV1{position:fixed;right:14px;top:14px;z-index:999990;background:linear-gradient(135deg,#692cff,#087fbd);color:white;border:1px solid #8c7bff;border-radius:999px;padding:11px 15px;font-weight:800;box-shadow:0 8px 30px #0008;display:none}
+#spaceiCodeStudioV1{position:fixed;inset:0;z-index:999991;background:#030611;color:#f5f7ff;display:none;overflow:auto;font:14px system-ui}
+#spaceiCodeStudioV1.show{display:block}
+#spaceiCodeStudioV1 .csWrap{max-width:1100px;margin:auto;padding:16px}
+#spaceiCodeStudioV1 .csCard{background:#0b1430;border:1px solid #293d70;border-radius:15px;padding:13px;margin:10px 0}
+#spaceiCodeStudioV1 button{background:#172650;color:white;border:1px solid #405b9b;border-radius:10px;padding:9px 12px;margin:3px}
+#spaceiCodeStudioV1 button.primary{background:#6338d7;border-color:#9479ff}
+#spaceiCodeStudioV1 button:disabled{opacity:.4}
+#spaceiCodeStudioV1 textarea{box-sizing:border-box;width:100%;min-height:280px;background:#050a18;color:#d9e7ff;border:1px solid #304575;border-radius:10px;padding:12px;font:12px/1.5 ui-monospace,monospace}
+#spaceiCodeStudioV1 input[type=file]{max-width:100%}
+#spaceiCodeStudioV1 .csRow{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+#spaceiCodeStudioV1 .csMuted{color:#9eafd7;font-size:12px}
+#spaceiCodeStudioV1 iframe{width:100%;height:380px;border:1px solid #344477;border-radius:10px;background:white}
+</style>
+<button id="spaceiCodeStudioLauncherV1" type="button">🛠️ Add Code to Website</button>
+<section id="spaceiCodeStudioV1" aria-label="SPACEI private code studio">
+ <div class="csWrap">
+  <div class="csRow"><h2 style="margin-right:auto">🛠️ SPΛCEI Code Studio</h2><button id="csCloseV1">Close</button></div>
+  <div class="csCard">
+   <b>Owner workspace</b>
+   <p class="csMuted">This workspace is shown only when the current profile matches the creator check already used by SPΛCEI. That check is browser-side, not secure authentication. Do not put passwords, API keys, or private credentials here.</p>
+   <div class="csRow">
+    <button class="primary" id="csLoadV1">Load website source</button>
+    <label>Import HTML <input id="csImportV1" type="file" accept=".html,.htm,text/html"></label>
+    <button id="csSaveVersionV1">Save backup</button>
+    <button id="csUndoV1">↶ Undo</button>
+    <button id="csRedoV1">↷ Redo</button>
+   </div>
+   <div id="csStatusV1" class="csMuted">Load the current HTML to begin. Backups stay in this browser on this device.</div>
+  </div>
+  <div class="csCard">
+   <b>Ask Code AI</b>
+   <textarea id="csPromptV1" style="min-height:90px" placeholder="Describe the code change you want…"></textarea>
+   <div class="csRow"><button id="csCopyPromptV1">Copy coding request</button><span class="csMuted">Local model: not installed yet. This button does not send your prompt to public chat or any API.</span></div>
+  </div>
+  <div class="csCard">
+   <b>Website source editor</b>
+   <textarea id="csEditorV1" spellcheck="false" placeholder="Load or import your website HTML…"></textarea>
+   <div class="csRow"><button class="primary" id="csPreviewV1">Preview changes</button><button id="csDownloadV1">Download updated HTML</button></div>
+   <p class="csMuted">Preview runs in an isolated frame. Downloaded edits are not published automatically. A secure GitHub publishing connection and real owner authentication still need to be configured before this page can write to the live repository.</p>
+  </div>
+  <div class="csCard"><b>Preview</b><iframe id="csFrameV1" sandbox="allow-scripts allow-forms"></iframe></div>
+  <div class="csCard"><b>Version history</b><div id="csHistoryV1" class="csMuted">No saved versions yet.</div></div>
+ </div>
+</section>
+<script id="SPACEI_CODE_STUDIO_V1">
+(function(){
+ const $=id=>document.getElementById(id);
+ const key='spacei_code_studio_history_v1';
+ let versions=[],cursor=-1;
+ function status(t){$('csStatusV1').textContent=t}
+ function ownerCheck(){
+  try{return typeof window.isCreatorAccount==='function' && window.isCreatorAccount()}catch(e){return false}
+ }
+ function read(){try{const a=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(a)?a:[]}catch(e){return []}}
+ function persist(){localStorage.setItem(key,JSON.stringify(versions.slice(-20)));renderHistory()}
+ function snapshot(label){
+  const code=$('csEditorV1').value;
+  if(!code.trim()){status('Load or import source before saving a backup.');return}
+  versions=versions.slice(0,cursor+1);
+  versions.push({label:label||'Code backup',code,time:new Date().toISOString()});
+  if(versions.length>20)versions.shift();
+  cursor=versions.length-1;persist();status('Backup saved locally. Version '+(cursor+1)+'.');
+ }
+ function renderHistory(){
+  $('csHistoryV1').innerHTML=versions.length?versions.map((v,i)=>'<div style="padding:7px;border-bottom:1px solid #26365d"><b>Version '+(i+1)+'</b> · '+new Date(v.time).toLocaleString()+' · '+String(v.label).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))+(i===cursor?' <b>(current)</b>':'')+'</div>').join(''):'No saved versions yet.';
+  $('csUndoV1').disabled=cursor<=0;$('csRedoV1').disabled=cursor<0||cursor>=versions.length-1;
+ }
+ function move(n){if(n<0||n>=versions.length)return;cursor=n;$('csEditorV1').value=versions[cursor].code;renderHistory();status('Restored local backup version '+(cursor+1)+'. Save or download when ready.')}
+ $('spaceiCodeStudioLauncherV1').onclick=()=>{if(!ownerCheck()){alert('Creator profile required.');return}$('spaceiCodeStudioV1').classList.add('show')};
+ $('csCloseV1').onclick=()=>$('spaceiCodeStudioV1').classList.remove('show');
+ $('csLoadV1').onclick=async()=>{try{const r=await fetch(location.href,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);$('csEditorV1').value=await r.text();snapshot('Loaded website source');status('Website source loaded. A local backup was created.')}catch(e){status('Could not load source automatically: '+e.message+'. Use Import HTML instead.')}};
+ $('csImportV1').onchange=async e=>{const f=e.target.files&&e.target.files[0];if(!f)return;$('csEditorV1').value=await f.text();snapshot('Imported '+f.name);status('Imported '+f.name+' and saved a backup.')};
+ $('csSaveVersionV1').onclick=()=>snapshot('Manual backup');
+ $('csUndoV1').onclick=()=>move(cursor-1);$('csRedoV1').onclick=()=>move(cursor+1);
+ $('csPreviewV1').onclick=()=>{const code=$('csEditorV1').value;if(!code.trim())return status('No source to preview.');$('csFrameV1').srcdoc=code;status('Preview updated in isolated frame. The live website was not changed.')};
+ $('csDownloadV1').onclick=()=>{const code=$('csEditorV1').value;if(!code.trim())return status('No source to download.');const blob=new Blob([code],{type:'text/html'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='spacei-updated.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status('HTML downloaded. It has not been published.')};
+ $('csCopyPromptV1').onclick=async()=>{const p=$('csPromptV1').value.trim();if(!p)return status('Write a coding request first.');const text='You are the private SPΛCEI Code AI. Edit only the supplied SPΛCEI source. Preserve existing features. Return the complete updated HTML and a concise change log. Request: '+p;try{await navigator.clipboard.writeText(text);status('Coding request copied. No AI service was contacted.')}catch(e){$('csPromptV1').value=text;status('Clipboard unavailable; request text is ready to copy manually.')}};
+ versions=read();cursor=versions.length-1;renderHistory();
+ if(ownerCheck())$('spaceiCodeStudioLauncherV1').style.display='block';
+ window.addEventListener('storage',()=>{if(ownerCheck())$('spaceiCodeStudioLauncherV1').style.display='block'});
+})();
+</script>
 </body>
 </html>
