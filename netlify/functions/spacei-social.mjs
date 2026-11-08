@@ -63,6 +63,11 @@ export default async (req) => {
         const me = await requireUser(req);
         if (!me) return json({ error:"Sign in again to access your inbox." }, 401);
         const data = await read(action + ":" + me.handle, []);
+        if (action === "messages") {
+          const sent = await read("sent:" + key(me.handle), []);
+          const combined = [...data, ...sent].sort((a,b) => String(a.createdAt).localeCompare(String(b.createdAt)));
+          return json({ messages: combined.slice(-500) });
+        }
         return json({ [action]: data });
       }
       return json({ error:"Unknown action" }, 404);
@@ -112,6 +117,7 @@ export default async (req) => {
       const message = { id:id(), from:me.handle, fromName:me.displayName, to:recipient.handle, text:clean(body.text, 2000), createdAt:now() };
       if (!message.text) return json({ error:"Message cannot be empty." }, 400);
       const inbox = await read("messages:" + to, []); inbox.push(message); await write("messages:" + to, inbox.slice(-500));
+      const sent = await read("sent:" + key(me.handle), []); sent.push(message); await write("sent:" + key(me.handle), sent.slice(-500));
       const notices = await read("notifications:" + to, []);
       notices.push({ id:id(), type:"message", text:"New message from " + me.displayName, createdAt:now(), read:false });
       await write("notifications:" + to, notices.slice(-200));
