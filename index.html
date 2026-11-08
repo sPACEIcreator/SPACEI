@@ -1044,6 +1044,7 @@ body.spaceiReducedMotion842 *,body.spaceiReducedMotion842 *::before,body.spaceiR
 <header>
   <div class="brand"><b>SPACEI v0.9.0</b><div class="small" id="aiStatus">AI: basic offline mode</div></div>
   <button id="petsBtn">🐾 Pets</button>
+  <button id="learnCodeTabV1" type="button" onclick="openLearnCodeV1()">📘 Learn Code</button>
   <button id="settingsBtn">⚙ Settings</button><button id="creditsBtn808" onclick="openCredits808()">📜 Credits</button><button id="aiFeaturesBtn804" type="button" onclick="openAIFeatures804()">✨ AI Features</button>
   <button id="devsBtn">💬 Devs</button><button onclick="openSecurity40()">🔐 Security</button><button onclick="openProtection47()">🛡️ Protection</button><button onclick="openSafeWeb55()">🦠 Safe Web</button><button id="musicBtnMain60" onclick="openMusic60()">🎵 Music</button><button onclick="openDonate62()">💜 Donate</button><button onclick="openDeviceSupport49()">💻 Support</button><button onclick="openPrivacy51()">🔒 Privacy</button><button id="testCenterBtn44" onclick="openTest44()">🧪 Test</button><button onclick="openPetStudio41()">🐾 Pet Studio</button><button onclick="openShop()">🛒 Shop</button><button onclick="openPanel('moderationPanel');renderModeration()">🛡️ Moderate</button>
 </header>
@@ -15455,6 +15456,38 @@ setTimeout(wire875,500);
 #spaceiCodeStudioV1 .csMuted{color:#9eafd7;font-size:12px}
 #spaceiCodeStudioV1 iframe{width:100%;height:380px;border:1px solid #344477;border-radius:10px;background:white}
 </style>
+
+<section id="learnCodePanelV1" style="display:none;position:fixed;inset:0;z-index:10050;background:#050817;color:#fff;overflow:auto;padding:14px">
+ <div style="max-width:1000px;margin:auto">
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;top:0;background:#050817;padding:8px 0;z-index:2">
+   <div style="margin-right:auto"><b style="font-size:22px">📘 Learn Code</b><div style="color:#aab6dc;font-size:13px">Learn the basics, then build something playable.</div></div>
+   <button type="button" onclick="closeLearnCodeV1()">✕ Close</button>
+  </div>
+  <div style="background:#111a38;border:1px solid #304071;border-radius:16px;padding:14px;margin:12px 0">
+   <b>What can coding make?</b>
+   <p style="color:#c5ccec;margin-bottom:0">Websites, mini-games, apps, animations, calculators, chat interfaces, and tools. You give the computer instructions using code.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px">
+   <article style="background:#101832;border:1px solid #304071;border-radius:14px;padding:12px"><b>1. HTML — the structure</b><p style="color:#c5ccec">HTML adds things to a page: headings, text, buttons, and images.</p><code>&lt;h1&gt;My game&lt;/h1&gt;</code></article>
+   <article style="background:#101832;border:1px solid #304071;border-radius:14px;padding:12px"><b>2. CSS — the style</b><p style="color:#c5ccec">CSS changes colors, sizes, spacing, and layout.</p><code>body { color: violet; }</code></article>
+   <article style="background:#101832;border:1px solid #304071;border-radius:14px;padding:12px"><b>3. JavaScript — the actions</b><p style="color:#c5ccec">JavaScript makes buttons work, tracks scores, and adds game rules.</p><code>let score = 0;</code></article>
+  </div>
+  <div style="background:#111a38;border:1px solid #5264a0;border-radius:16px;padding:14px;margin:14px 0">
+   <b style="font-size:18px">🎮 Your first mini-game: Star Clicker</b>
+   <p style="color:#c5ccec">The code below makes a game. Click the star to earn points. Read the code, change the goal from <b>5</b> to <b>10</b>, then press Run Code.</p>
+   <label for="learnCodeEditorV1" style="display:block;margin:10px 0 6px">Your code (HTML + CSS + JavaScript)</label>
+   <textarea id="learnCodeEditorV1" spellcheck="false" style="width:100%;min-height:360px;resize:vertical;background:#070d20;color:#d9e6ff;border:1px solid #5264a0;border-radius:12px;padding:12px;font:13px/1.5 ui-monospace,monospace"></textarea>
+   <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
+    <button type="button" onclick="runLearnCodeV1()">▶ Run Code</button>
+    <button type="button" onclick="resetLearnCodeV1()">↺ Reset example</button>
+   </div>
+   <div id="learnCodeStatusV1" style="color:#9fe7ff;font-size:13px;margin:8px 0">Tip: find the line const goal = 5; and change 5 to 10.</div>
+   <b>Live game preview</b>
+   <iframe id="learnCodePreviewV1" title="Star Clicker game preview" sandbox="allow-scripts" style="width:100%;height:360px;background:#fff;border:1px solid #5264a0;border-radius:12px;margin-top:8px"></iframe>
+  </div>
+  <div style="color:#aab6dc;font-size:13px;padding:4px 2px 24px">Your code runs in a sandboxed preview here. It does not change or publish the SPΛCEI website.</div>
+ </div>
+</section>
 <button id="spaceiCodeStudioLauncherV1" type="button">🛠️ Add Code to Website</button>
 <section id="spaceiCodeStudioV1" aria-label="SPACEI private code studio">
  <div class="csWrap">
@@ -15523,6 +15556,37 @@ setTimeout(wire875,500);
  versions=read();restoreHistory();
  if(ownerCheck())$('spaceiCodeStudioLauncherV1').style.display='block';
  window.addEventListener('storage',()=>{if(ownerCheck())$('spaceiCodeStudioLauncherV1').style.display='block'});
+})();
+</script>
+<script id="SPACEI_LEARN_CODE_V1">
+(function(){
+ const starter="<!doctype html>\n<html>\n<head>\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<style>\nbody{font-family:system-ui;background:#101832;color:white;text-align:center;padding:24px}\n.card{max-width:360px;margin:30px auto;padding:24px;border:1px solid #5264a0;border-radius:18px;background:#182449}\nbutton{padding:12px 18px;border:0;border-radius:12px;background:#8b7cff;color:white;font-weight:bold;font-size:18px}\n#score{font-size:30px;color:#8ff}\n</style>\n</head>\n<body>\n<div class=\"card\">\n<h1>🚀 Star Clicker</h1>\n<p>Click the star to earn points!</p>\n<div id=\"score\">0</div>\n<button id=\"star\">⭐ Click me!</button>\n<p id=\"message\">Can you reach 5 points?</p>\n</div>\n<script>\nlet score = 0;\nconst goal = 5;\ndocument.getElementById('star').addEventListener('click', function(){\n  score = score + 1;\n  document.getElementById('score').textContent = score;\n  if(score >= goal){\n    document.getElementById('message').textContent = 'You won! Great coding!';\n  }\n});\n</script>\n</body>\n</html>";
+ window.openLearnCodeV1=function(){
+  const p=document.getElementById('learnCodePanelV1');
+  if(p){p.style.display='block';document.body.style.overflow='hidden';}
+ };
+ window.closeLearnCodeV1=function(){
+  const p=document.getElementById('learnCodePanelV1');
+  if(p){p.style.display='none';document.body.style.removeProperty('overflow');}
+ };
+ window.runLearnCodeV1=function(){
+  const code=document.getElementById('learnCodeEditorV1').value;
+  if(!code.trim()){document.getElementById('learnCodeStatusV1').textContent='Add some code first.';return;}
+  document.getElementById('learnCodePreviewV1').srcdoc=code;
+  document.getElementById('learnCodeStatusV1').textContent='Preview refreshed! Try your game.';
+ };
+ window.resetLearnCodeV1=function(){
+  document.getElementById('learnCodeEditorV1').value=starter;
+  runLearnCodeV1();
+  document.getElementById('learnCodeStatusV1').textContent='Starter game restored. Change const goal = 5; to const goal = 10; then run it.';
+ };
+ document.addEventListener('DOMContentLoaded',function(){
+  const e=document.getElementById('learnCodeEditorV1');
+  if(e)e.value=starter;
+  const p=document.getElementById('learnCodePanelV1');
+  if(p){p.addEventListener('click',function(event){if(event.target===p)closeLearnCodeV1();});}
+ });
+ window.addEventListener('keydown',function(e){if(e.key==='Escape')closeLearnCodeV1();});
 })();
 </script>
 </body>
