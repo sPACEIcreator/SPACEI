@@ -1,0 +1,4 @@
+[[redirects]]
+  from = "/api/spacei-social"
+  to = "/.netlify/functions/spacei-social"
+  status = 200
