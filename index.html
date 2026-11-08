@@ -1928,7 +1928,8 @@ function getCurrentSPACEIUsername(){
   return '';
 }
 function isCreatorAccount(){
-  return getCurrentSPACEIUsername().trim().toLowerCase()==='oreopuggy (dev/creator)';
+  const n=getCurrentSPACEIUsername().trim().toLowerCase();
+  return n==='oreopuggy (dev/creator)'||n==='spacepuggy';
 }
 function openShop(){
   const verified=localStorage.getItem('spacei_shop_16_verified')==='yes';
@@ -3432,7 +3433,7 @@ body.easyReadMode .sheet{line-height:1.75!important}
     upTitle.textContent=p.displayName||p.username;
     upAvatar.textContent=p.avatar||'👤';
     upName.textContent=p.displayName||p.username;
-    upVerified.textContent=p.verified?'★ Verified':'';
+    upVerified.textContent=p.founder?'✦ FOUNDER • ★ OFFICIAL CREATOR':(p.verified?'★ Verified':'');
     upBio.textContent=p.bio||'';
     upFollowing.textContent=p.following||0;
     upFollowers.textContent=(p.followers||0)+(profileFollows[p.username]?1:0);
@@ -10271,9 +10272,9 @@ addEventListener('resize',()=>{if(document.getElementById('warpDriveGame849')?.c
  // Grant the creator account its permanent official identity badge and title.
  try{
   if(owner()){
-   const all=read(),k='oreopuggy (dev/creator)';
-   const p=all[k]||{username:'oreopuggy (dev/creator)',displayName:'OreoPuggy',bio:'SPACEI creator',avatar:'👤',following:0,followers:0,likes:0,videos:[]};
-   p.title='Official Creator';p.verified=true;all[k]=p;write(all);
+   const all=read(),k=keyOf(getCurrentSPACEIUsername())||'spacepuggy';
+   const p=all[k]||{username:getCurrentSPACEIUsername()||'spacePuggy',displayName:'spacePuggy',bio:'Founder and creator of SPΛCEI',avatar:'👤',following:0,followers:0,likes:0,videos:[]};
+   p.title='Founder • Official Creator';p.verified=true;p.founder=true;all[k]=p;write(all);
   }
  }catch(e){}
  const profileRender=window.renderUserProfile;
@@ -15753,7 +15754,8 @@ setTimeout(wire875,500);
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
    <div style="background:#0e1834;border:1px solid #304071;border-radius:15px;padding:13px">
     <b>🤖 Your AI tutor</b>
-    <div id="lcTutorChat" style="height:280px;overflow:auto;background:#070d20;border:1px solid #293b6b;border-radius:10px;padding:10px;margin:10px 0;font-size:14px;white-space:pre-wrap"><div style="color:#aeeaff">Your tutor will say hi when you open Learn Code.</div></div>
+    <div id="lcTutorModeV1" class="notice" style="margin:8px 0">FREE LOCAL TUTOR • OFFLINE • NO API</div>
+<div id="lcTutorChat" style="height:280px;overflow:auto;background:#070d20;border:1px solid #293b6b;border-radius:10px;padding:10px;margin:10px 0;font-size:14px;white-space:pre-wrap"><div style="color:#aeeaff">Your tutor will say hi when you open Learn Code.</div></div>
     <div style="display:flex;gap:7px"><input id="lcTutorInput" placeholder="Ask your tutor…" style="min-width:0;flex:1;background:#070d20;color:#fff;border:1px solid #40558b;border-radius:10px;padding:11px"><button type="button" id="lcTutorSend">Send</button></div>
     <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px"><button type="button" id="lcTutorExplain">Explain my code</button><button type="button" id="lcTutorHint">Give me a hint</button><button type="button" id="lcTutorNext">What's next?</button></div>
     <div style="font-size:11px;color:#9eafd7;margin-top:8px">AI tutor replies use the SPΛCEI chat service. If that service is unavailable, built-in lesson guidance still works.</div>
@@ -15859,6 +15861,28 @@ setTimeout(wire875,500);
  let index=0,started=false,chat=[],tutorBusy=false;
  const rankFor=n=>n===0?'Beginner':n===1?'Noob':n===2?'Pro':'Awesome';
  const fallback="Hi! I'm your SPΛCEI coding tutor. 👋 Coding is giving a computer instructions. We'll learn HTML for structure, CSS for style, and JavaScript for actions. We'll build mini-games one step at a time. Let's start with Star Clicker: first, find the score variable in the starter code. It remembers how many stars you've earned!";
+
+ function localTutorReply(message){
+  const q=String(message||'').toLowerCase(),p=projects[index],code=$('lcCode')?.value||'';
+  const missing=[];
+  if(index===0){if(!/let\s+(score|points|count)/i.test(code))missing.push('a score variable');if(!/addEventListener\s*\(\s*['"]click['"]|onclick\s*=/i.test(code))missing.push('a click event');if(!/(textContent|innerText)/i.test(code))missing.push('updating the score on the page');}
+  if(index===1){if(!/addEventListener\s*\(\s*['"]click['"]|onclick\s*=/i.test(code))missing.push('a click event');if(!/backgroundColor/i.test(code))missing.push('changing the background color');if(!/(count|score)/i.test(code))missing.push('a counter variable');}
+  if(index===2){if(!/if\s*\(/i.test(code))missing.push('an if/else decision');if(!/(score|points)/i.test(code))missing.push('a score variable');if(!/(correct|wrong|try again)/i.test(code))missing.push('answer feedback');}
+  if(index===3){if(!/Math\.random\s*\(/i.test(code))missing.push('Math.random() for moving the target');if(!/(setInterval|setTimeout)/i.test(code))missing.push('a timer');if(!/addEventListener\s*\(\s*['"]click['"]|onclick\s*=/i.test(code))missing.push('a click event');}
+  if(/^(hi|hello|hey|yo)\b/.test(q))return 'Hey! This is your free offline SPΛCEI coding tutor. It runs in this browser with no paid API or internet request. We are on '+p.title+'. '+p.steps[0];
+  if(q.includes('html')||q.includes('css')||q.includes('javascript')||q.includes('what is coding'))return 'HTML creates page elements, CSS controls how they look, and JavaScript makes them respond to actions. In '+p.title+', we are using JavaScript to make the game react.';
+  if(q.includes('hint')||q.includes('stuck'))return 'Hint for '+p.title+': '+p.steps[Math.min(index,p.steps.length-1)]+' Try only that one change, then press Run Game.';
+  if(q.includes('explain')||q.includes('line by line'))return 'HTML is structure, CSS is appearance, and JavaScript is behavior. Your mission: '+p.desc+' Start here: '+p.steps[Math.min(index,p.steps.length-1)];
+  if(q.includes('error')||q.includes('blank')||q.includes('not work')||q.includes('broken'))return 'Check that the IDs in your JavaScript match the HTML, that brackets and parentheses are paired, and that your script runs after the page elements exist. What exact error or behavior do you see?';
+  if(q.includes('check')||q.includes('pass')||q.includes('review')||q.includes('my code')){
+   if(missing.length)return 'I checked your code in this browser. I could not find: '+missing.join('; ')+'. Work on this first: '+p.steps[Math.min(index,p.steps.length-1)];
+   return 'Your code contains the main patterns for this mission. Press Run Game and test it. If it works, press Check Mission.';
+  }
+  if(q.includes('next'))return 'Next step for '+p.title+': '+p.steps[Math.min(index,p.steps.length-1)];
+  if(!code.trim())return 'Your editor is empty. Start with: '+p.steps[0]+' Type your own attempt and press Run Game.';
+  if(missing.length)return 'I looked through your '+p.title+' code. Work on '+missing[0]+'. Mission tip: '+p.steps[Math.min(index,p.steps.length-1)];
+  return 'The main requirements look present. Run the game and tell me what you expected versus what happened in the preview.';
+ }
  function append(role,text){const box=$('lcTutorChat');if(!box)return;const d=document.createElement('div');d.style.cssText='padding:9px 10px;margin:7px 0;border-radius:10px;white-space:pre-wrap;background:'+(role==='You'?'#25204b':'#12264a');d.innerHTML='<b>'+role+':</b> '+String(text).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));box.appendChild(d);box.scrollTop=box.scrollHeight;chat.push({role,text});}
  async function askTutor(message,showUser=true){
   if(tutorBusy)return;
@@ -15866,31 +15890,22 @@ setTimeout(wire875,500);
   const actionButtons=['lcTutorSend','lcTutorExplain','lcTutorHint','lcTutorNext','lcCheck'];
   actionButtons.forEach(id=>{const el=$(id);if(el)el.disabled=true;});
   if(showUser)append('You',message);
-  append('Tutor','Thinking…');
+  append('Tutor','Thinking locally…');
   const box=$('lcTutorChat'),thinking=box.lastChild,p=projects[index];
   const recent=chat.slice(-10).map(m=>m.role+': '+m.text).join('\\n');
   const prompt="You are the SPΛCEI Learn Code tutor. Teach one small coding step at a time. The learner must write every line themselves: NEVER provide a completed game, full code solution, or prewritten code. Explain simply, refer to earlier messages, and do not repeat the same greeting or instructions. Answer the learner's actual question directly. Give one small hint and ask them to type the next part. Current project: "+p.title+". Goal: "+p.desc+". Steps: "+p.steps.join(' | ')+". Learner code: "+$('lcCode').value.slice(0,9000)+". Recent conversation: "+recent+". Learner says: "+message+". Give a fresh, specific response that moves them forward without writing code for them.";
   try{
-   const r=await fetch('/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:prompt})});
-   const d=await r.json();if(!r.ok||!d.text)throw new Error(d.error||'Tutor unavailable');
-   thinking.remove();append('Tutor',d.text);
-  }catch(e){
    thinking.remove();
-   const lower=message.toLowerCase();
-   const step=p.steps[Math.min(index,p.steps.length-1)];
-   let hint;
-   if(lower.includes('hint')||lower.includes('stuck'))hint='Small hint for '+p.title+': '+step+' Do only that one part, then press Run Game.';
-   else if(lower.includes('explain'))hint='HTML makes the page elements, CSS changes how they look, and JavaScript handles actions. For this mission, focus on: '+step;
-   else if(lower.includes('not pass')||lower.includes('did not pass')||lower.includes('check')){const c=$('lcCode').value;const missing=[];if(!/(addEventListener\s*\(\s*['"]click['"]|onclick\s*=)/i.test(c))missing.push('a click action (addEventListener or onclick)');if(index===0&&!/let\s+score/i.test(c))missing.push('a score variable');if(index===0&&!/(textContent|innerText)/i.test(c))missing.push('an update to the score on the page');if(index===1&&!/backgroundColor/i.test(c))missing.push('a backgroundColor change');if(index===2&&!/if\s*\(/i.test(c))missing.push('an if/else decision');if(index===3&&!/Math\.random\s*\(/i.test(c))missing.push('a random target position');hint=missing.length?'The checker could not find: '+missing.join(', ')+'. Add those parts and check again.':'I found the main code patterns. Make sure the code is inside a complete HTML page, then press Run Game and try the controls.';}
-   else hint='Let’s do one small step at a time. '+step+' Type your attempt in the editor, press Run Game, and tell me what happens.';
-   append('Tutor',hint+' The online tutor is unavailable, so this is the built-in offline help.');
+   append('Tutor',localTutorReply(message));
+  }catch(e){
+   thinking.remove();append('Tutor','Offline tutor had trouble reading that. Ask about the current step or describe the code issue.');
   }finally{
    tutorBusy=false;actionButtons.forEach(id=>{const el=$(id);if(el)el.disabled=false;});
   }
  }
  function renderProgress(){const pct=Math.round(index/projects.length*100);const rank=rankFor(index);$('lcProgressFill').style.width=pct+'%';$('lcProgressText').textContent=pct+'% journey complete • '+index+' / '+projects.length+' projects passed';$('lcRankText').textContent=rank+' • '+(index===4?'All projects complete!':'Next: '+projects[index].title);['Beginner','Noob','Pro','Awesome'].forEach((r,i)=>{const el=$('lcRank'+r);el.style.borderColor=i<=index?'#8c83ff':'#304071';el.style.background=i===Math.min(index,3)?'#25204b':'transparent';});}
  function loadProject(){const p=projects[index];if(!p){$('lcMissionTitle').textContent='🏆 Game Builder';$('lcMissionText').textContent='You completed the full coding path!';$('lcSteps').innerHTML='<li>You completed all four coding missions. Keep experimenting and build your own original game!</li>';$('lcCode').value='';$('lcPreview').srcdoc='';renderProgress();return;} $('lcMissionTitle').textContent='Project '+(index+1)+': '+p.title+' • '+p.rank;$('lcMissionText').textContent=p.desc;$('lcSteps').innerHTML=p.steps.map(x=>'<li>'+x.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))+'</li>').join('');$('lcCode').value='';$('lcPreview').srcdoc='';$('lcStatus').textContent='Empty editor ready. Read step 1, type your own code, then run it to test.';renderProgress();}
- window.openLearnCodeV1=function(){const p=$('learnCodePanelV1');if(!p)return;p.style.display='block';document.body.style.overflow='hidden';if(!started){started=true;loadProject();askTutor('Please greet me, explain what coding is, introduce HTML, CSS and JavaScript in simple words, and begin teaching me the first step of Star Clicker.',false);} };
+ window.openLearnCodeV1=function(){const p=$('learnCodePanelV1');if(!p)return;p.style.display='block';document.body.style.overflow='hidden';const ai=$('lcTutorModeV1');if(ai)ai.textContent='FREE LOCAL TUTOR • OFFLINE • NO API';if(!started){started=true;loadProject();askTutor('Please greet me, explain what coding is, introduce HTML, CSS and JavaScript in simple words, and begin teaching me the first step of Star Clicker.',false);} };
  window.closeLearnCodeV1=function(){const p=$('learnCodePanelV1');if(p){p.style.display='none';document.body.style.removeProperty('overflow');}};
  window.runLearnCodeV1=()=>{const code=$('lcCode').value;if(!code.trim()){$('lcStatus').textContent='Your editor is empty. Type your HTML, CSS, and JavaScript first, then press Run Game.';$('lcCode').focus();return;}try{$('lcPreview').srcdoc=code;$('lcStatus').textContent='Preview refreshed. Try your game in the preview below. If it is blank, check that you added HTML elements inside your page.';}catch(e){$('lcStatus').textContent='Could not run this code: '+e.message;}};
  window.resetLearnCodeV1=()=>{if(tutorBusy)return;$('lcCode').value='';$('lcPreview').srcdoc='';$('lcStatus').textContent='Editor cleared. Write the code yourself, then run it.';};
