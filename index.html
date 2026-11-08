@@ -10173,16 +10173,15 @@ addEventListener('resize',()=>{if(document.getElementById('warpDriveGame849')?.c
   <p class="small">Assign or remove approved profile titles. This version saves to this browser only; shared account-wide title sync still needs the verified social backend.</p>
   <label for="spxTitleUserV1">Account username or @ID</label>
   <input id="spxTitleUserV1" placeholder="e.g. @OrbitAI">
-  <label for="spxTitleSelectV1">Approved title</label>
+  <label for="spxTitleSelectV1">Choose a title</label>
   <select id="spxTitleSelectV1">
-   <option value="Lawyer">Lawyer</option>
-   <option value="System Architect">System Architect</option>
-   <option value="Moderator">Moderator</option>
-   <option value="Judge">Judge</option>
-   <option value="Developer">Developer</option>
-   <option value="Verified Creator">Verified Creator</option>
-   <option value="Founder">Founder (protected)</option>
+   <option value="Lawyer">Lawyer</option><option value="System Architect">System Architect</option>
+   <option value="Moderator">Moderator</option><option value="Judge">Judge</option>
+   <option value="Developer">Developer</option><option value="Verified Creator">Verified Creator</option>
+   <option value="Founder">Founder (protected)</option><option value="__custom">Custom title…</option>
   </select>
+  <label for="spxTitleCustomV1">Or enter a custom title</label>
+  <input id="spxTitleCustomV1" maxlength="32" placeholder="e.g. Community Legend">
   <div style="display:flex;flex-wrap:wrap;gap:8px">
    <button id="spxTitleAssignV1">＋ Assign title</button>
    <button id="spxTitleRemoveV1">Remove title</button>
@@ -10200,14 +10199,18 @@ addEventListener('resize',()=>{if(document.getElementById('warpDriveGame849')?.c
  const owner=()=>{try{return typeof isCreatorAccount==='function'&&isCreatorAccount()}catch(e){return false}};
  const panel=$('spxTitlePanelV1');
  const status=t=>$('spxTitleStatusV1').textContent=t;
- function open(){if(!owner())return alert('Creator account required.');panel.classList.add('open');panel.setAttribute('aria-hidden','false')}
+ function open(target){if(!owner())return alert('Creator account required.');if(target)$('spxTitleUserV1').value='@'+String(target).replace(/^@/,'');panel.classList.add('open');panel.setAttribute('aria-hidden','false')}
  function close(){panel.classList.remove('open');panel.setAttribute('aria-hidden','true')}
  function keyOf(v){return String(v||'').trim().replace(/^@/,'').toLowerCase()}
  function change(remove){
   if(!owner())return status('Permission check failed.');
-  const raw=$('spxTitleUserV1').value.trim(),key=keyOf(raw),title=$('spxTitleSelectV1').value;
-  if(!key)return status('Enter an account username or @ID first.');
-  if(!allowed.includes(title))return status('That title is not approved.');
+  const raw=$('spxTitleUserV1').value.trim(),key=keyOf(raw),choice=$('spxTitleSelectV1').value;
+  const custom=$('spxTitleCustomV1').value.trim();
+  const title=choice==='__custom'?custom:choice;
+  if(!key)return status('Open a profile or enter an account @ID first.');
+  if(!title||title.length>32)return status('Enter a title up to 32 characters.');
+  if(/[<>]/.test(title))return status('That title contains unsupported characters.');
+  if(choice!=='__custom'&&!allowed.includes(title))return status('That title is not approved.');
   const all=read();
   let p=all[key]||all[raw]||{username:raw.replace(/^@/,''),displayName:raw.replace(/^@/,''),bio:'',avatar:'👤',verified:false,following:0,followers:0,likes:0,videos:[]};
   if(remove){
@@ -10223,7 +10226,7 @@ addEventListener('resize',()=>{if(document.getElementById('warpDriveGame849')?.c
    window.activeProfileUser.title=p.title;
    if(typeof window.renderUserProfile==='function')window.renderUserProfile();
   }
-  status(remove?'Title removed from this browser.':'Title assigned in this browser. Reload the profile to refresh its local cache.');
+  status(remove?'Title removed from this browser.':'Title assigned in this browser. This is currently saved on this device only; shared sync needs the server backend.');
  }
  $('spxTitleCloseV1').addEventListener('click',close);
  $('spxTitleAssignV1').addEventListener('click',()=>change(false));
@@ -10235,12 +10238,27 @@ addEventListener('resize',()=>{if(document.getElementById('warpDriveGame849')?.c
  launch.addEventListener('click',open);
  const add=()=>{if(owner()&&!document.getElementById('spxTitleLauncherV1'))document.body.appendChild(launch)};
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add);else add();
+ // Grant the creator account its permanent official identity badge and title.
+ try{
+  if(owner()){
+   const all=read(),k='oreopuggy (dev/creator)';
+   const p=all[k]||{username:'oreopuggy (dev/creator)',displayName:'OreoPuggy',bio:'SPACEI creator',avatar:'👤',following:0,followers:0,likes:0,videos:[]};
+   p.title='Official Creator';p.verified=true;all[k]=p;write(all);
+  }
+ }catch(e){}
  const profileRender=window.renderUserProfile;
  if(typeof profileRender==='function'){
   window.renderUserProfile=function(){
    profileRender();
    const p=window.activeProfileUser,hero=document.querySelector('#userProfilePage .upHero');
    if(!hero||!p)return;
+   const isOwner=owner();
+   let give=document.getElementById('spxGiveTitleV1');
+   if(isOwner){
+    if(!give){give=document.createElement('button');give.id='spxGiveTitleV1';give.textContent='✦ Give title';give.style.cssText='display:block;margin:10px auto;background:linear-gradient(120deg,#6658ff,#00b8d4);color:white;font-weight:800';hero.appendChild(give);}
+    give.onclick=()=>open(p.handle||p.username);
+    give.style.display='block';
+   }else if(give){give.style.display='none';}
    let badge=document.getElementById('spxTitleBadgeV1');
    if(!badge){badge=document.createElement('div');badge.id='spxTitleBadgeV1';const bio=document.getElementById('upBio');bio?.insertAdjacentElement('beforebegin',badge)}
    badge.textContent=p.title||'';
