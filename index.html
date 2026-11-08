@@ -15463,6 +15463,30 @@ setTimeout(wire875,500);
    <div style="margin-right:auto"><b style="font-size:22px">📘 Learn Code</b><div style="color:#aab6dc;font-size:13px">Learn the basics, then build something playable.</div></div>
    <button type="button" onclick="closeLearnCodeV1()">✕ Close</button>
   </div>
+
+  <div style="background:#111a38;border:1px solid #5264a0;border-radius:16px;padding:14px;margin:12px 0">
+   <b>🎯 Ready status</b>
+   <p style="color:#c5ccec;margin:6px 0 10px">Pick the level that feels right. You can change it anytime.</p>
+   <div id="learnCodeLevelsV2" style="display:flex;gap:8px;flex-wrap:wrap">
+    <button type="button" data-level="Beginner" onclick="setLearnLevelV2('Beginner')">Beginner</button>
+    <button type="button" data-level="Noob" onclick="setLearnLevelV2('Noob')">Noob</button>
+    <button type="button" data-level="Pro" onclick="setLearnLevelV2('Pro')">Pro</button>
+    <button type="button" data-level="Awesome" onclick="setLearnLevelV2('Awesome')">Awesome</button>
+   </div>
+   <div id="learnLevelStatusV2" style="margin-top:10px;color:#9fe7ff">Current level: Beginner</div>
+   <div id="learnGameMissionV2" style="display:none;margin-top:12px;padding:12px;border-radius:12px;background:#080f24;border:1px solid #5264a0">
+    <b>🏆 Awesome level challenge: Build your own mini-game!</b>
+    <p style="color:#c5ccec">Create a mini-game with a visible button, a score or points counter, and JavaScript that changes the game when the button is clicked. Then press Run Game and Check My Game.</p>
+    <textarea id="learnGameBuildV2" spellcheck="false" placeholder="Write your mini-game HTML, CSS and JavaScript here..." style="width:100%;min-height:260px;resize:vertical;background:#050a18;color:#d9e7ff;border:1px solid #5264a0;border-radius:10px;padding:12px;font:13px/1.5 ui-monospace,monospace"></textarea>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
+     <button type="button" onclick="runLearnGameV2()">▶ Run Game</button>
+     <button type="button" onclick="checkLearnGameV2()">✅ Check My Game</button>
+     <button type="button" onclick="showLearnLessonV2()">📚 Review lesson</button>
+    </div>
+    <div id="learnGameFeedbackV2" style="color:#9fe7ff;font-size:13px">Your game should include a button, a score/points display, and working JavaScript click behavior.</div>
+    <iframe id="learnGamePreviewV2" title="Your mini-game preview" sandbox="allow-scripts" style="width:100%;height:300px;background:#fff;border:1px solid #5264a0;border-radius:12px;margin-top:8px"></iframe>
+   </div>
+  </div>
   <div style="background:#111a38;border:1px solid #304071;border-radius:16px;padding:14px;margin:12px 0">
    <b>What can coding make?</b>
    <p style="color:#c5ccec;margin-bottom:0">Websites, mini-games, apps, animations, calculators, chat interfaces, and tools. You give the computer instructions using code.</p>
@@ -15586,6 +15610,59 @@ setTimeout(wire875,500);
   const p=document.getElementById('learnCodePanelV1');
   if(p){p.addEventListener('click',function(event){if(event.target===p)closeLearnCodeV1();});}
  });
+
+ window.setLearnLevelV2=function(level){
+  const allowed=['Beginner','Noob','Pro','Awesome'];
+  if(!allowed.includes(level))return;
+  try{localStorage.setItem('spacei_learn_code_level_v2',level)}catch(e){}
+  const label=document.getElementById('learnLevelStatusV2');
+  if(label)label.textContent='Current level: '+level;
+  document.querySelectorAll('#learnCodeLevelsV2 button').forEach(b=>{
+   const active=b.getAttribute('data-level')===level;
+   b.style.background=active?'#6b68d8':'#182449';
+   b.style.border=active?'2px solid #a8e8ff':'1px solid #5264a0';
+  });
+  const mission=document.getElementById('learnGameMissionV2');
+  if(mission)mission.style.display=level==='Awesome'?'block':'none';
+  if(level==='Awesome'&&mission)document.getElementById('learnGameFeedbackV2').textContent='Your final challenge is ready. Build a mini-game and test it!';
+ };
+ window.runLearnGameV2=function(){
+  const code=document.getElementById('learnGameBuildV2').value;
+  if(!code.trim()){document.getElementById('learnGameFeedbackV2').textContent='Write some game code first, then run it.';return;}
+  document.getElementById('learnGamePreviewV2').srcdoc=code;
+  document.getElementById('learnGameFeedbackV2').textContent='Game preview refreshed. Try clicking your game button!';
+ };
+ window.showLearnLessonV2=function(){
+  const mission=document.getElementById('learnGameMissionV2');
+  if(mission)mission.style.display='none';
+  window.setLearnLevelV2('Pro');
+  document.getElementById('learnCodeStatusV1').textContent='Review HTML for structure, CSS for styling, and JavaScript for button actions. When ready, choose Awesome again to retry the game challenge.';
+  document.getElementById('learnCodePanelV1').scrollTo({top:0,behavior:'smooth'});
+ };
+ window.checkLearnGameV2=function(){
+  const code=document.getElementById('learnGameBuildV2').value;
+  const hasButton=/<button\b/i.test(code);
+  const hasScript=/<script\b/i.test(code);
+  const hasScore=/(score|points|counter)/i.test(code);
+  const hasClick=/(addEventListener\s*\(\s*['"]click['"]|onclick\s*=)/i.test(code);
+  if(hasButton&&hasScript&&hasScore&&hasClick){
+   document.getElementById('learnGameFeedbackV2').textContent='🎉 Challenge passed! Your code has the key parts of a mini-game. Run it and test the button to make sure it works. You earned Awesome Builder!';
+   document.getElementById('learnLevelStatusV2').textContent='Current level: Awesome — Builder challenge passed!';
+   try{localStorage.setItem('spacei_learn_code_level_v2','Awesome')}catch(e){}
+  }else{
+   document.getElementById('learnGameFeedbackV2').textContent='Not quite yet — that is okay! The checker needs a <button>, a <script>, a score/points/counter, and click behavior (addEventListener("click") or onclick). Review the lesson and try again.';
+   window.setLearnLevelV2('Pro');
+   document.getElementById('learnGameMissionV2').style.display='none';
+   document.getElementById('learnCodeStatusV1').textContent='Let’s practice again. Add the missing game parts, then choose Awesome when you are ready to retry.';
+   document.getElementById('learnCodePanelV1').scrollTo({top:0,behavior:'smooth'});
+  }
+ };
+ document.addEventListener('DOMContentLoaded',function(){
+  let level='Beginner';
+  try{const saved=localStorage.getItem('spacei_learn_code_level_v2');if(['Beginner','Noob','Pro','Awesome'].includes(saved))level=saved}catch(e){}
+  window.setLearnLevelV2(level);
+ });
+
  window.addEventListener('keydown',function(e){if(e.key==='Escape')closeLearnCodeV1();});
 })();
 </script>
