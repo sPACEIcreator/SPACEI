@@ -9944,8 +9944,9 @@ addEventListener('resize',()=>{if(document.getElementById('warpDriveGame849')?.c
 <script id="spaceiSocialUpgrade1000">
 (()=> {
   const API='/api/spacei-social';
-  const getJSON=async(url)=>{const r=await fetch(url);if(!r.ok)throw new Error(await r.text());return r.json()};
-  const postJSON=async(action,body)=>{const r=await fetch(API+'?action='+encodeURIComponent(action),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Request failed');return d};
+  const authHeaders=()=>{const t=localStorage.getItem('spacei_auth_token')||'';return t?{authorization:'Bearer '+t}:{};};
+  const getJSON=async(url)=>{const r=await fetch(url,{headers:authHeaders()});if(!r.ok)throw new Error(await r.text());return r.json()};
+  const postJSON=async(action,body)=>{const r=await fetch(API+'?action='+encodeURIComponent(action),{method:'POST',headers:{'content-type':'application/json',...authHeaders()},body:JSON.stringify(body)});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Request failed');return d};
 
   function handle(){return localStorage.getItem('spacei_permanent_handle')||''}
   function setHandle(h){
@@ -9976,7 +9977,7 @@ addEventListener('resize',()=>{if(document.getElementById('warpDriveGame849')?.c
     try{
       const p=JSON.parse(localStorage.getItem('spacei_profile_074')||'{}');
       const o=JSON.parse(localStorage.getItem('spacei_onboarding_profile')||'{}');
-      await postJSON('profile',{handle:h,displayName:o.name||p.username||'SPACEI User',username:p.username||o.name||'',bio:p.bio||''});
+      await postJSON('profile',{displayName:o.name||p.username||'SPACEI User',bio:p.bio||''});
     }catch(e){}
   }
 
