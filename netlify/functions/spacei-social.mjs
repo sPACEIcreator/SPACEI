@@ -33,7 +33,8 @@ async function listUsers(q = "") {
   for (const h of ids) {
     const u = await read("user:" + h, null);
     if (u && (!q || (u.handle + " " + u.displayName).toLowerCase().includes(q.toLowerCase()))) {
-      users.push({ handle: u.handle, displayName: u.displayName, bio: u.bio || "", title: u.title || "", verified: !!u.verified, createdAt: u.createdAt });
+      const founder = key(u.handle) === "spacepuggy";
+      users.push({ handle: u.handle, displayName: u.displayName, bio: u.bio || "", title: founder ? "Founder • Official Creator" : (u.title || ""), verified: founder || !!u.verified, founder, createdAt: u.createdAt });
     }
   }
   return users.slice(-300).reverse();
@@ -57,7 +58,7 @@ export default async (req) => {
       if (action === "profile") {
         const h = key(url.searchParams.get("handle"));
         const u = await read("user:" + h, null);
-        return u ? json({ user: { handle:u.handle, displayName:u.displayName, bio:u.bio, title:u.title, verified:u.verified, createdAt:u.createdAt } }) : json({ error:"User not found" }, 404);
+        return u ? json({ user: { handle:u.handle, displayName:u.displayName, bio:u.bio, title:key(u.handle)==="spacepuggy" ? "Founder • Official Creator" : u.title, verified:key(u.handle)==="spacepuggy" || !!u.verified, founder:key(u.handle)==="spacepuggy", createdAt:u.createdAt } }) : json({ error:"User not found" }, 404);
       }
       if (action === "messages" || action === "notifications") {
         const me = await requireUser(req);
