@@ -3263,6 +3263,10 @@ body.easyReadMode .sheet{line-height:1.75!important}
   });
 
   // Add videos option to bottom nav Profile and Inbox destinations through capture hook.
+  window.spaceiEnsureAccount=ensureAccount;
+  window.spaceiSocialPost=postJSON;
+  window.spaceiSocialGet=getJSON;
+
   document.addEventListener('click',e=>{
     const text=(e.target.innerText||'').trim().toLowerCase();
     if(text==='watch videos'||text==='videos'){
@@ -10291,6 +10295,55 @@ addEventListener('resize',()=>{if(document.getElementById('warpDriveGame849')?.c
    badge.style.display=p.title?'block':'none';
   };
  }
+})();
+</script>
+
+
+<script id="SPACEI_SHARED_MESSAGING_V2">
+(()=> {
+ const $=id=>document.getElementById(id), esc=v=>{const d=document.createElement('div');d.textContent=String(v??'');return d.innerHTML};
+ const token=()=>localStorage.getItem('spacei_auth_token')||'';
+ const me=()=>localStorage.getItem('spacei_permanent_handle')||'';
+ let activeTo='';
+ async function ready(){
+  if(!token()){
+   const name=(JSON.parse(localStorage.getItem('spacei_onboarding_profile')||'{}').name)||JSON.parse(localStorage.getItem('spacei_profile_074')||'{}').username||'';
+   if(!name)throw new Error('Finish account setup before messaging.');
+   if(typeof window.spaceiEnsureAccount!=='function')throw new Error('Account service is still loading.');
+   await window.spaceiEnsureAccount(name);
+  }
+  if(!token())throw new Error('Sign in again to use shared messages.');
+ }
+ async function loadInbox(){
+  await ready();
+  const d=await window.spaceiSocialGet('/api/spacei-social?action=messages');
+  const items=d.messages||[], grouped=new Map();
+  items.forEach(m=>{const other=(String(m.from).toLowerCase()===me().toLowerCase())?m.to:m.from;if(!grouped.has(other))grouped.set(other,[]);grouped.get(other).push(m);});
+  const box=$('inboxList');
+  box.innerHTML=grouped.size?[...grouped.entries()].map(([who,arr])=>{const last=arr[arr.length-1];return '<div class="inboxRow"><div class="avatar">👤</div><div class="inboxMain"><div class="name">'+esc(who)+'</div><div class="preview">'+esc(last.text)+'</div></div><button data-spx-thread="'+esc(who)+'">Open</button></div>';}).join(''):'<div class="small">No shared messages yet. Start a conversation with a SPACEI @ID.</div>';
+  box.querySelectorAll('[data-spx-thread]').forEach(b=>b.onclick=()=>openThread(b.dataset.spxThread,items));
+ }
+ async function openThread(who,items){
+  activeTo=who;$('inboxList').classList.add('hidden');$('newMessageBox').classList.add('hidden');$('threadBox').classList.remove('hidden');$('threadTitle').textContent=who;
+  const d=items?{messages:items}:await window.spaceiSocialGet('/api/spacei-social?action=messages');
+  const list=(d.messages||[]).filter(m=>[m.from,m.to].some(x=>String(x).toLowerCase()===String(who).toLowerCase()));
+  $('threadMessages').innerHTML=list.map(m=>'<div class="card"><b>'+esc(m.from)+'</b><div>'+esc(m.text)+'</div><div class="small">'+esc(new Date(m.createdAt).toLocaleString())+'</div></div>').join('')||'<div class="small">No messages yet.</div>';
+ }
+ async function send(to,text,clear){
+  await ready();const result=await window.spaceiSocialPost('message',{to:String(to||'').replace(/^@/,''),text});
+  if(!result.ok)throw new Error('Message was not accepted.');
+  if(clear)clear();toast('Message delivered to their SPACEI inbox.');await loadInbox();if(activeTo)await openThread(activeTo);
+ }
+ document.addEventListener('click',async e=>{
+  const id=e.target.closest('button')?.id;
+  if(id==='sendDmBtn'){e.preventDefault();e.stopImmediatePropagation();const to=$('dmTo').value.trim(),txt=$('dmText').value.trim();if(!to||!txt)return toast('Enter their @ID and a message.');try{await send(to,txt,()=>{$('dmTo').value='';$('dmText').value='';});}catch(err){toast(err.message)}}
+  else if(id==='sendReplyBtn'){e.preventDefault();e.stopImmediatePropagation();const txt=$('threadReply').value.trim();if(!txt)return;try{await send(activeTo,txt,()=>$('threadReply').value='');}catch(err){toast(err.message)}}
+  else if(id==='backInboxBtn'){setTimeout(()=>{activeTo='';loadInbox().catch(err=>toast(err.message));},0);}
+  else if(id==='newMessageBtn')$('dmTo').placeholder='@username';
+ },true);
+ const oldRender=window.renderInbox;
+ window.renderInbox=function(){if(oldRender)oldRender();loadInbox().catch(err=>{const box=$('inboxList');if(box)box.innerHTML='<div class="small">'+esc(err.message)+'</div>';});};
+ document.addEventListener('DOMContentLoaded',()=>{$('inboxSearch')?.addEventListener('input',()=>loadInbox().catch(()=>{}));});
 })();
 </script>
 
