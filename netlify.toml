@@ -2,3 +2,8 @@
   from = "/api/spacei-social"
   to = "/.netlify/functions/spacei-social"
   status = 200
+
+[[redirects]]
+  from = "/api/spacei-roadmap"
+  to = "/.netlify/functions/spacei-roadmap"
+  status = 200

@@ -15918,5 +15918,61 @@ setTimeout(wire875,500);
  window.addEventListener('keydown',e=>{if(e.key==='Escape')closeLearnCodeV1();});
 })();
 </script>
+<style id="spaceiRoadmapV1CSS">
+#spxRoadmapOpen{position:fixed;right:12px;bottom:145px;z-index:24999;background:linear-gradient(120deg,#655cff,#00b9d7);border:1px solid #9ca7ff;color:#fff;font-weight:800;box-shadow:0 8px 28px #0008}
+#spxRoadmapPanel{display:none;position:fixed;inset:0;z-index:25002;background:#030615f5;color:#fff;overflow:auto;padding:16px;font-family:system-ui}
+#spxRoadmapPanel.open{display:block}
+#spxRoadmapPanel .rpCard{max-width:760px;margin:20px auto;background:#101832;border:1px solid #405080;border-radius:18px;padding:16px}
+#spxRoadmapPanel input,#spxRoadmapPanel textarea,#spxRoadmapPanel select{width:100%;padding:10px;margin:5px 0 10px;background:#080f24;color:#fff;border:1px solid #53618d;border-radius:10px}
+#spxRoadmapPanel button{margin:4px;padding:9px 12px;cursor:pointer}
+#spxRoadmapPanel .rpGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+#spxRoadmapPanel .rpTile{background:#0a1229;border:1px solid #304071;border-radius:13px;padding:12px}
+#spxRoadmapPanel .rpStatus{white-space:pre-wrap;color:#aeeeff;font-size:13px}
+</style>
+<button id="spxRoadmapOpen">✦ Master Update</button>
+<section id="spxRoadmapPanel" aria-modal="true" role="dialog">
+ <div class="rpCard">
+  <div style="display:flex;align-items:center;gap:10px"><b style="font-size:21px">SPΛCEI Master Update</b><span style="flex:1"></span><button id="spxRoadmapClose">Close</button></div>
+  <p class="small">Account-backed social, safety, pets, beta and multiplayer tools. Sign in to sync across devices.</p>
+  <div class="rpGrid">
+   <div class="rpTile"><b>✦ Public titles</b><input id="rpTitleUser" placeholder="@username"><input id="rpTitleValue" maxlength="48" placeholder="Title"><button id="rpTitleSave">Assign title (Founder)</button></div>
+   <div class="rpTile"><b>👥 Follow / block</b><input id="rpSocialUser" placeholder="@username"><button id="rpFollow">Follow / unfollow</button><button id="rpBlock">Block account</button><button id="rpUnblock">Unblock</button></div>
+   <div class="rpTile"><b>🐾 Saved pet</b><input id="rpPetName" placeholder="Pet name"><textarea id="rpPetDrawing" placeholder="Pet design data / description"></textarea><button id="rpPetSave">Save pet to account</button><button id="rpPetLoad">Load saved pet</button></div>
+   <div class="rpTile"><b>🎥 Video engagement</b><input id="rpVideoId" placeholder="Video ID"><input id="rpComment" placeholder="Comment"><button id="rpLike">Like / unlike</button><button id="rpCommentSend">Comment</button></div>
+   <div class="rpTile"><b>📨 Share video</b><input id="rpShareId" placeholder="Video ID"><input id="rpShareTo" placeholder="Recipient @username"><button id="rpShare">Share in inbox</button></div>
+   <div class="rpTile"><b>📎 Message attachment</b><input id="rpMsgTo" placeholder="Recipient @username"><input id="rpAttachment" type="file" accept="image/*,audio/*"><textarea id="rpMsgText" placeholder="Message (optional)"></textarea><button id="rpSendAttachment">Send message / attachment</button></div>
+   <div class="rpTile"><b>🔔 Notifications</b><button id="rpNotifications">Refresh notifications</button><div id="rpNotices" class="rpStatus"></div></div>
+   <div class="rpTile"><b>🧪 Beta tester report</b><input id="rpVersion" placeholder="Project version"><input id="rpProject" placeholder="Acode project link"><select id="rpCategory"><option>Broken button</option><option>Crash / error</option><option>Feature not working</option><option>Design issue</option><option>Suggestion</option></select><textarea id="rpDetails" placeholder="What happened?"></textarea><button id="rpBetaSend">Submit report</button></div>
+   <div class="rpTile"><b>🌐 Multiplayer</b><button id="rpMatchJoin">Join public matchmaking</button><button id="rpMatchLeave">Leave matchmaking</button><div id="rpMatchStatus" class="rpStatus"></div></div>
+   <div class="rpTile"><b>🛡️ Moderation request</b><input id="rpModUser" placeholder="@username"><textarea id="rpModReason" placeholder="Reason and evidence summary"></textarea><button id="rpModSend">Send to Founder for review</button></div>
+  </div>
+  <p id="rpStatus" class="rpStatus" aria-live="polite">Ready.</p>
+ </div>
+</section>
+<script id="spaceiRoadmapV1JS">
+(()=>{const $=id=>document.getElementById(id),API='/api/spacei-roadmap',old='/api/spacei-social';
+const token=()=>localStorage.getItem('spacei_auth_token')||'',headers=()=>({'content-type':'application/json',...(token()?{authorization:'Bearer '+token()}:{})});
+const status=t=>$('rpStatus').textContent=t,call=async(a,b={})=>{const r=await fetch(API+'?action='+a,{method:'POST',headers:headers(),body:JSON.stringify(b)}),d=await r.json();if(!r.ok)throw Error(d.error||'Request failed');return d},get=async(a)=>{const r=await fetch(API+'?action='+a,{headers:headers()}),d=await r.json();if(!r.ok)throw Error(d.error||'Request failed');return d};
+const handle=()=>localStorage.getItem('spacei_permanent_handle')||'';
+$('spxRoadmapOpen').onclick=()=>$('spxRoadmapPanel').classList.add('open');$('spxRoadmapClose').onclick=()=>$('spxRoadmapPanel').classList.remove('open');
+async function run(fn){try{status(JSON.stringify(await fn(),null,2))}catch(e){status(e.message)}}
+$('rpTitleSave').onclick=()=>run(()=>call('title',{handle:$('rpTitleUser').value,title:$('rpTitleValue').value}));
+$('rpFollow').onclick=()=>run(()=>call('follow',{handle:$('rpSocialUser').value}));
+$('rpBlock').onclick=()=>run(()=>call('block',{handle:$('rpSocialUser').value}));
+$('rpUnblock').onclick=()=>run(()=>call('unblock',{handle:$('rpSocialUser').value}));
+$('rpPetSave').onclick=()=>run(()=>call('pet-save',{name:$('rpPetName').value,drawing:$('rpPetDrawing').value,care:{saved:true}}));
+$('rpPetLoad').onclick=()=>run(async()=>{const d=await get('pet');if(d.pet){$('rpPetName').value=d.pet.name;$('rpPetDrawing').value=d.pet.drawing||''}return d});
+$('rpLike').onclick=()=>run(()=>call('video-like',{videoId:$('rpVideoId').value}));
+$('rpCommentSend').onclick=()=>run(()=>call('video-comment',{videoId:$('rpVideoId').value,text:$('rpComment').value}));
+$('rpShare').onclick=()=>run(()=>call('share-video',{videoId:$('rpShareId').value,to:$('rpShareTo').value}));
+$('rpNotifications').onclick=()=>run(async()=>{const d=await get('notifications');$('rpNotices').textContent=(d.notifications||[]).slice(-20).map(n=>n.createdAt+' · '+n.text).join('\n')||'No notifications yet.';return {count:d.notifications?.length||0}});
+$('rpBetaSend').onclick=()=>run(()=>call('beta-report',{version:$('rpVersion').value,projectUrl:$('rpProject').value,category:$('rpCategory').value,details:$('rpDetails').value}));
+$('rpModSend').onclick=()=>run(()=>call('moderation-request',{handle:$('rpModUser').value,reason:$('rpModReason').value}));
+$('rpMatchJoin').onclick=()=>run(async()=>{const d=await call('match-join');$('rpMatchStatus').textContent='Real players: '+d.realPlayers+' · Bots: '+d.bots+' · State: '+d.room.status+' · Countdown: '+(d.room.countdownEndsAt?new Date(d.room.countdownEndsAt).toLocaleTimeString():'waiting');return d});
+$('rpMatchLeave').onclick=()=>run(()=>call('match-leave'));
+$('rpSendAttachment').onclick=()=>run(async()=>{const f=$('rpAttachment').files[0];let attachment='';if(f){if(f.size>5000000)throw Error('Attachments must be 5 MB or smaller.');attachment=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(f)})}return call('message',{to:$('rpMsgTo').value,text:$('rpMsgText').value,kind:f?(f.type.startsWith('audio/')?'audio':'image'):'text',attachment})});
+window.spaceiRoadmapRefresh=()=>run(()=>get('notifications'));
+})();
+</script>
 </body>
 </html>
