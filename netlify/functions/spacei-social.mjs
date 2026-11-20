@@ -78,7 +78,7 @@ export default async (req) => {
     if (action === "recover-founder") {
       const expected = Netlify.env.get("SPACEI_FOUNDER_RECOVERY_SECRET");
       const supplied = String(body.recoverySecret || "");
-      if (!expected || supplied.length < 32 || supplied !== expected) {
+      if (!expected || !supplied || supplied !== expected) {
         return json({ error:"Recovery could not be verified. Check the recovery key and try again." }, 401);
       }
       const handle = "spacepuggy";
