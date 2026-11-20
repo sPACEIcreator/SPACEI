@@ -14,10 +14,10 @@ button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:12px;backg
 </style></head>
 <body><main>
 <div class="mark">SPΛCEI</div><h1>Recover @SpacePuggy</h1>
-<p>This restores access to the original founder account. It does not delete or change BIG BOY. Your existing profile and content stay attached to @SpacePuggy.</p>
+<p>Use your private founder recovery key to restore access to the original @SpacePuggy account. This does not delete or change any other account.</p>
 <form id="recover">
 <label for="secret">Founder recovery key</label>
-<input id="secret" type="password" autocomplete="off" minlength="32" required>
+<input id="secret" type="password" autocomplete="off" minlength="1" maxlength="128" spellcheck="false" required>
 <button id="submit" type="submit">Recover original account</button>
 </form>
 <div id="status" role="status"></div>
@@ -28,7 +28,7 @@ const form=document.getElementById("recover"),status=document.getElementById("st
 form.addEventListener("submit",async e=>{
  e.preventDefault();button.disabled=true;button.textContent="Recovering…";status.textContent="";
  try{
-  const response=await fetch("/.netlify/functions/spacei-social?action=recover-founder",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({recoverySecret:document.getElementById("secret").value})});
+  const response=await fetch("/.netlify/functions/spacei-social?action=recover-founder",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({recoverySecret:document.getElementById("secret").value.trim()})});
   const data=await response.json();
   if(!response.ok)throw new Error(data.error||"Recovery failed.");
   const token=data.token;
