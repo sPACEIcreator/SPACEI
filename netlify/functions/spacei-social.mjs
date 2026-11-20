@@ -75,6 +75,26 @@ export default async (req) => {
     }
     if (req.method !== "POST") return json({ error:"Method not allowed" }, 405);
     const body = await req.json();
+    if (action === "recover-founder") {
+      const expected = Netlify.env.get("SPACEI_FOUNDER_RECOVERY_SECRET");
+      const supplied = String(body.recoverySecret || "");
+      if (!expected || supplied.length < 32 || supplied !== expected) {
+        return json({ error:"Recovery could not be verified. Check the recovery key and try again." }, 401);
+      }
+      const handle = "spacepuggy";
+      const user = await read("user:" + handle, null);
+      if (!user) return json({ error:"The original @SpacePuggy account record was not found. No account was changed." }, 404);
+      const token = [...crypto.getRandomValues(new Uint8Array(32))].map(x => x.toString(16).padStart(2, "0")).join("");
+      const oldHash = user.tokenHash;
+      const newHash = await tokenHash(token);
+      const tokens = await read("token-index", {});
+      if (oldHash) delete tokens[oldHash];
+      tokens[newHash] = handle;
+      user.tokenHash = newHash;
+      await write("user:" + handle, user);
+      await write("token-index", tokens);
+      return json({ ok:true, user:{ handle:user.handle, displayName:user.displayName }, token });
+    }
     if (action === "register") {
       const requested = key(body.handle || body.username || body.displayName);
       if (!requested || !/^[a-z0-9._-]{3,32}$/.test(requested)) return json({ error:"Choose a 3–32 character username using letters, numbers, dots, _ or -." }, 400);
