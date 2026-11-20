@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SPΛCEI • Account Recovery</title>
+<style>
+:root{color-scheme:dark;--bg:#080d20;--panel:#111b38;--cyan:#65e2ff;--purple:#8a6cff;--text:#eef4ff}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:22px;background:radial-gradient(circle at 20% 10%,#182b55 0,transparent 38%),var(--bg);font:16px system-ui;color:var(--text)}
+main{width:min(100%,460px);padding:26px;border:1px solid #34466d;border-radius:22px;background:#101a34;box-shadow:0 20px 70px #0008}
+h1{margin:0 0 8px;font-size:25px}p{color:#bdc9e4;line-height:1.5}.mark{color:var(--cyan);letter-spacing:2px;font-weight:800}
+label{display:block;margin:18px 0 7px;font-weight:650}input{width:100%;padding:14px;border-radius:12px;border:1px solid #40557e;background:#080f23;color:white;font:inherit}
+button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:12px;background:linear-gradient(100deg,var(--purple),#327fce);color:white;font-weight:800;font-size:15px}
+#status{margin-top:14px;white-space:pre-wrap;overflow-wrap:anywhere}.small{font-size:13px;color:#9aabc9}
+</style></head>
+<body><main>
+<div class="mark">SPΛCEI</div><h1>Recover @SpacePuggy</h1>
+<p>This restores access to the original founder account. It does not delete or change BIG BOY. Your existing profile and content stay attached to @SpacePuggy.</p>
+<form id="recover">
+<label for="secret">Founder recovery key</label>
+<input id="secret" type="password" autocomplete="off" minlength="32" required>
+<button id="submit" type="submit">Recover original account</button>
+</form>
+<div id="status" role="status"></div>
+<p class="small">Only use this page on the official spaceiwe.netlify.app domain. Never share the recovery key or the new session token.</p>
+</main>
+<script>
+const form=document.getElementById("recover"),status=document.getElementById("status"),button=document.getElementById("submit");
+form.addEventListener("submit",async e=>{
+ e.preventDefault();button.disabled=true;button.textContent="Recovering…";status.textContent="";
+ try{
+  const response=await fetch("/.netlify/functions/spacei-social?action=recover-founder",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({recoverySecret:document.getElementById("secret").value})});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||"Recovery failed.");
+  const token=data.token;
+  // Save under common SPΛCEI session key variants so the current client can pick it up.
+  for(const k of ["spaceiToken","spacei_token","spacei-social-token","spaceiSocialToken","spacei_social_token"])localStorage.setItem(k,token);
+  status.textContent="Recovered "+data.user.handle+". Your new session token has been saved in this browser. Return to SPΛCEI and refresh the page. If it does not sign in automatically, do not create another account—contact the site owner for the correct session-key integration.";
+  document.getElementById("secret").value="";
+ }catch(err){status.textContent=err.message;}
+ finally{button.disabled=false;button.textContent="Recover original account";}
+});
+</script></body></html>
